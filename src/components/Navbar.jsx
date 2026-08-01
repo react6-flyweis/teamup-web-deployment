@@ -32,14 +32,14 @@ import arrow from '../assets/arrow.svg';
 // import link from '../assets/fb.svg';
 import { FaFacebookF, FaInstagram, FaTiktok } from 'react-icons/fa';
 import drinks_cocktails from '../assets/drinks_cocktails.svg';
-import { useMenuItems } from '../hooks/useMenuItems';
+import { useMenuCategories } from '../hooks/useMenuItems';
 
 const logo = '/assets/logo.svg';
 const baseball = '/assets/ball.svg';
 const texture = '/assets/texture.svg';
 
 
-const Navbar = () => {
+const Navbar = ({ topBanner }) => {
   const [isOpen2, setIsOpen2] = useState(false);
   const [isOpen3, setIsOpen3] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -50,9 +50,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const handleBooking = useBooking();
 
-  const { data: menuData } = useMenuItems();
-  const { data: groupActivitiesData } = useMenuItems({ section: 'group-activities' });
-  const apiMenuItems = menuData?.menuItems || [];
+  const { data: categoriesData, isLoading } = useMenuCategories({ search: '', sortBy: 'order', sortOrder: 'asc' });
+  const apiCategories = categoriesData?.categories || [];
 
   React.useEffect(() => {
     const handleClickOutside = (event) => {
@@ -69,42 +68,51 @@ const Navbar = () => {
     handleBooking();
   };
 
-  const chooseGameItems = apiMenuItems
-    .filter(item => item.isActive !== false && item.section === 'choose-game')
+  const menuItems = apiCategories
+    .filter(cat => cat.isActive !== false && cat.isHidden !== true)
     .sort((a, b) => (a.order || 0) - (b.order || 0))
-    .map(item => ({
-      name: item.title,
-      icon: item.iconUrl || '',
-      link: `/games/${item.slug}`,
-    }));
+    .reduce((acc, cat) => {
+      const isChooseGame = cat.section === 'choose-game';
+      const isGroupActivities = cat.section === 'group-activities';
+      const activeSubItems = (cat.subItems || [])
+        .filter(sub => sub.isHidden !== true)
+        .sort((a, b) => (a.order || 0) - (b.order || 0))
+        .map(sub => {
+          let link = sub.path || '';
+          const subSlug = sub.slug || sub.name?.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          const cleanSlug = subSlug ? (subSlug.startsWith('/') ? subSlug.slice(1) : subSlug) : '';
 
-  const groupActivitiesItems = (groupActivitiesData?.menuItems || [])
-    .filter(item => item.isActive !== false)
-    .sort((a, b) => (a.order || 0) - (b.order || 0))
-    .map(item => ({
-      name: item.title,
-      icon: item.iconUrl || '',
-      link: `/activities/${item.slug}`,
-    }));
+          if (isChooseGame) {
+            link = `/games/${cleanSlug}`;
+          } else if (isGroupActivities) {
+            link = `/activities/${cleanSlug}`;
+          }
+          return {
+            id: sub.id,
+            name: sub.name,
+            icon: sub.icon,
+            link: link,
+          };
+        });
 
+      const slugPath = '/' + cat.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
-  const menuItems = {
-    'Choose Game': chooseGameItems,
-    'Group Activities': groupActivitiesItems,
-    'Bites & Drinks': [
-      { name: 'Drinks and Cocktails', icon: drinks_cocktails, link: '/cocktails' },
-      { name: 'Street Food', icon: food, link: '/food' },
-    ],
-    Corporates: [],
-  };
+      acc[cat.name] = {
+        id: cat.id,
+        path: cat.path || (activeSubItems.length === 0 ? slugPath : undefined),
+        subItems: activeSubItems
+      };
+      return acc;
+    }, {});
 
-  const handleMenuClick = (menu) => {
-    if (menu === 'Corporates') {
-      navigate('/corporate');
+  const handleMenuClick = (menuName) => {
+    const menuObj = menuItems[menuName];
+    if (menuObj?.path) {
+      navigate(menuObj.path);
       setHoveredMenu(null);
       setIsMobileMenuOpen(false);
     } else {
-      setHoveredMenu(prev => (prev === menu ? null : menu));
+      setHoveredMenu(prev => (prev === menuName ? null : menuName));
     }
   };
 
@@ -480,36 +488,44 @@ const Navbar = () => {
               <div className="desktop-only flex-wrap items-center gap-8 sm:gap-16">
                 <LocationSelector />
                 <div className="flex flex-wrap items-center gap-4 text-[16px] abyssinica-sil-regular">
-                  {Object.keys(menuItems).map((menu, idx) => {
-                    const hasSubMenu = Array.isArray(menuItems[menu]) && menuItems[menu].length > 0;
-                    const isDirectLink = !hasSubMenu && menu === 'Corporates';
+                  {isLoading ? (
+                    <div className="flex items-center gap-6">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="h-5 w-24 bg-gray-600/50 animate-pulse rounded"></div>
+                      ))}
+                    </div>
+                  ) : (
+                    Object.keys(menuItems).map((menu, idx) => {
+                      const subItems = menuItems[menu]?.subItems || [];
+                      const hasSubMenu = subItems.length > 0;
 
-                    return (
-                      <div
-                        key={idx}
-                        className="relative group flex items-center gap-1 cursor-pointer"
-                        onClick={() => handleMenuClick(menu)}
-                      >
-                        <span
-                          className={`transition-colors duration-200 ${hoveredMenu === menu ? 'text-[#E1017D]' : 'text-white'
-                            }`}
+                      return (
+                        <div
+                          key={idx}
+                          className="relative group flex items-center gap-1 cursor-pointer"
+                          onClick={() => handleMenuClick(menu)}
                         >
-                          {menu}
-                        </span>
-                        {hasSubMenu && (
-                          <svg
-                            className={`w-4 h-4 transform transition-transform duration-300 ${hoveredMenu === menu ? 'rotate-180 text-[#E1017D]' : 'text-white'
+                          <span
+                            className={`transition-colors duration-200 ${hoveredMenu === menu ? 'text-[#E1017D]' : 'text-white'
                               }`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
                           >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        )}
-                      </div>
-                    );
-                  })}
+                            {menu}
+                          </span>
+                          {hasSubMenu && (
+                            <svg
+                              className={`w-4 h-4 transform transition-transform duration-300 ${hoveredMenu === menu ? 'rotate-180 text-[#E1017D]' : 'text-white'
+                                }`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
 
@@ -546,12 +562,18 @@ const Navbar = () => {
                 }}
               >
                 <div className="max-w-screen-xl mx-auto">
-                  {(hoveredMenu === 'Choose Game' || hoveredMenu === 'Group Activities' || hoveredMenu === 'Bites & Drinks') && (
+                  {menuItems[hoveredMenu]?.subItems?.length > 0 && (
                     <div className="grid grid-cols-3 sm:grid-cols-7 gap-6">
-                      {menuItems[hoveredMenu].map((item, index) => {
+                      {menuItems[hoveredMenu].subItems.map((item, index) => {
                         const content = (
                           <div className="flex flex-col items-center gap-2 text-white hover:bg-gray-700/50 rounded-lg ps-4 pe-4">
-                            <img src={item.icon} alt={item.name} className="w-full h-[78px]" />
+                            {item.icon ? (
+                              <img src={item.icon} alt={item.name} className="w-full h-[78px] object-contain" />
+                            ) : (
+                              <div className="w-full h-[78px] bg-gray-700/30 rounded flex items-center justify-center text-xs text-gray-400">
+                                No Icon
+                              </div>
+                            )}
                             <span style={{ fontFamily: 'Noir' }} className="text-[18px] text-center">
                               {item.name}
                             </span>
@@ -576,51 +598,64 @@ const Navbar = () => {
               <div className="mobile-only bg-black/90 w-full px-4 py-4 relative z-20 animate-mobile-dropdown">
                 <div className="flex flex-col gap-4">
                   <LocationSelector isMobile onSelect={() => setIsMobileMenuOpen(false)} />
-                  {Object.keys(menuItems).map((menu, idx) => (
-                    <div key={idx} className="flex flex-col">
-                      <div
-                        className="text-white text-[16px] py-2 cursor-pointer flex items-center justify-between"
-                        onClick={() => handleMenuClick(menu)}
-                      >
-                        <span>{menu}</span>
-                        {Array.isArray(menuItems[menu]) && menuItems[menu].length > 0 && (
-                          <svg
-                            className={`w-4 h-4 transform transition-transform ${hoveredMenu === menu ? 'rotate-180' : ''}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        )}
-                      </div>
-                      {hoveredMenu === menu && Array.isArray(menuItems[menu]) && menuItems[menu].length > 0 && (
-                        <div className="pl-4 flex flex-col gap-2 animate-mobile-dropdown">
-                          {menuItems[menu].map((item, index) => (
-                            item.link ? (
-                              <Link
-                                to={item.link}
-                                key={index}
-                                className="flex items-center gap-2 text-white hover:text-[#E1017D]"
-                                onClick={handleSubItemClick}
-                              >
-                                <img src={item.icon} alt={item.name} className="w-6 h-6" />
-                                <span className="text-sm">{item.name}</span>
-                              </Link>
-                            ) : (
-                              <div
-                                key={index}
-                                className="flex items-center gap-2 text-white hover:text-[#E1017D]"
-                              >
-                                <img src={item.icon} alt={item.name} className="w-6 h-6" />
-                                <span className="text-sm">{item.name}</span>
-                              </div>
-                            )
-                          ))}
-                        </div>
-                      )}
+                  {isLoading ? (
+                    <div className="flex flex-col gap-3 py-2">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="h-6 w-32 bg-gray-700/50 animate-pulse rounded"></div>
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    Object.keys(menuItems).map((menu, idx) => {
+                      const subItems = menuItems[menu]?.subItems || [];
+                      const hasSubMenu = subItems.length > 0;
+
+                      return (
+                        <div key={idx} className="flex flex-col">
+                          <div
+                            className="text-white text-[16px] py-2 cursor-pointer flex items-center justify-between"
+                            onClick={() => handleMenuClick(menu)}
+                          >
+                            <span>{menu}</span>
+                            {hasSubMenu && (
+                              <svg
+                                className={`w-4 h-4 transform transition-transform ${hoveredMenu === menu ? 'rotate-180' : ''}`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            )}
+                          </div>
+                          {hoveredMenu === menu && hasSubMenu && (
+                            <div className="pl-4 flex flex-col gap-2 animate-mobile-dropdown">
+                              {subItems.map((item, index) => (
+                                item.link ? (
+                                  <Link
+                                    to={item.link}
+                                    key={index}
+                                    className="flex items-center gap-2 text-white hover:text-[#E1017D]"
+                                    onClick={handleSubItemClick}
+                                  >
+                                    {item.icon && <img src={item.icon} alt={item.name} className="w-6 h-6 object-contain" />}
+                                    <span className="text-sm">{item.name}</span>
+                                  </Link>
+                                ) : (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-2 text-white hover:text-[#E1017D]"
+                                  >
+                                    {item.icon && <img src={item.icon} alt={item.name} className="w-6 h-6 object-contain" />}
+                                    <span className="text-sm">{item.name}</span>
+                                  </div>
+                                )
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
                   <div style={{ fontFamily: 'Noir' }} className="flex gap-2">
                     <button
                       className="bg-[#E1017D] hover:bg-pink-600 text-white py-1 w-1/2 rounded text-xs"
@@ -642,17 +677,18 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* Tipsy Thrills Section */}
-            <div className="w-full py-2 px-4 text-center text-white animated-stripes-container animated-stripes">
-              <div className="stripes-content">
-                {/* <Link to="/brunchcart"> */}
-                <Link to="/coming-soon">
-                  <span style={{ fontFamily: 'Noir' }} className="text-[16px] sm:text-[18px] uppercase">
-                    Tipsy Thrills - Sips & Thrills Fri 15th Aug
-                  </span>
-                </Link>
+            {/* Top Banner Section */}
+            {topBanner?.isActive !== false && topBanner?.text && (
+              <div className="w-full py-2 px-4 text-center text-white animated-stripes-container animated-stripes">
+                <div className="stripes-content">
+                  <Link to="/coming-soon">
+                    <span style={{ fontFamily: 'Noir' }} className="text-[16px] sm:text-[18px] uppercase">
+                      {topBanner.text}
+                    </span>
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
