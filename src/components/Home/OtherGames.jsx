@@ -1,13 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGames } from "../../hooks/useGames";
 import { useBooking } from "../../hooks/useBooking";
+import { resolveImageUrl } from "../../hooks/useSiteContent";
 
-const OtherGames = ({ excludeSlug, showHeading = true }) => {
+const OtherGames = ({ excludeSlug, showHeading = true, items }) => {
   const { data, isLoading, error } = useGames();
   const handleBooking = useBooking();
+  const navigate = useNavigate();
 
-  if (isLoading) {
+  if (!items && isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#E1017D]"></div>
@@ -15,20 +17,32 @@ const OtherGames = ({ excludeSlug, showHeading = true }) => {
     );
   }
 
-  if (error) {
+  if (!items && error) {
     return null;
   }
 
-  const apiGames = data?.games || [];
-  const games = apiGames
-    .filter((game) => game.isActive !== false && game.slug !== excludeSlug)
-    .map((game) => {
-      return {
+  let games = [];
+  if (items && Array.isArray(items) && items.length > 0) {
+    games = items
+      .filter((game) => game.isActive !== false)
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .map((game) => ({
+        title: game.title || game.name,
+        image: resolveImageUrl(game.imageUrl || game.image || ""),
+        link: game.buttonLink || (game.slug ? `/games/${game.slug}` : ""),
+        buttonText: game.buttonText || "BOOK NOW",
+      }));
+  } else {
+    const apiGames = data?.games || [];
+    games = apiGames
+      .filter((game) => game.isActive !== false && game.slug !== excludeSlug)
+      .map((game) => ({
         title: game.name,
-        image: game.imageUrl || "",
+        image: resolveImageUrl(game.imageUrl || ""),
         link: `/games/${game.slug}`,
-      };
-    });
+        buttonText: "BOOK NOW",
+      }));
+  }
 
   if (games.length === 0) {
     return null;
@@ -37,7 +51,7 @@ const OtherGames = ({ excludeSlug, showHeading = true }) => {
   return (
     <>
       {showHeading && (
-        <h1 style={{ fontFamily: 'Posterama2001W04' }} className="text-center text-2xl md:text-[44px] text-[#292524] mt-12 font-bold mb-4">
+        <h1 style={{ fontFamily: 'Posterama2001W04' }} className="text-center text-2xl md:text-[44px] text-[#292524] mt-12 font-bold mb-4 uppercase">
           OTHER GAMES
         </h1>
       )}
@@ -45,7 +59,7 @@ const OtherGames = ({ excludeSlug, showHeading = true }) => {
         {games.map((game, index) => (
           <div
             key={index}
-            className={`relative group overflow-hidden rounded-md h-[300px] sm:h-[350px] md:h-[400px] cursor-pointer`}
+            className="relative group overflow-hidden rounded-md h-[300px] sm:h-[350px] md:h-[400px] cursor-pointer"
           >
             {game.image ? (
               <img
@@ -66,17 +80,25 @@ const OtherGames = ({ excludeSlug, showHeading = true }) => {
                 </h3>
                 <div className="w-full flex flex-row items-center gap-3">
                   <button 
-                    onClick={handleBooking}
+                    onClick={() => {
+                      if (game.link) {
+                        navigate(game.link);
+                      } else {
+                        handleBooking();
+                      }
+                    }}
                     className="flex-1 bg-[#00AACB] hover:bg-cyan-600 text-white py-3 text-[14px] md:text-[16px] font-bold rounded uppercase tracking-tighter"
                   >
-                    BOOK NOW
+                    {game.buttonText}
                   </button>
-                  <Link 
-                    to={game.link}
-                    className="flex-1 bg-[#292524] hover:bg-black text-white py-3 text-[14px] md:text-[16px] font-bold rounded text-center uppercase tracking-tighter border border-white/20"
-                  >
-                    LEARN MORE
-                  </Link>
+                  {game.link && (
+                    <Link 
+                      to={game.link}
+                      className="flex-1 bg-[#292524] hover:bg-black text-white py-3 text-[14px] md:text-[16px] font-bold rounded text-center uppercase tracking-tighter border border-white/20"
+                    >
+                      LEARN MORE
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
