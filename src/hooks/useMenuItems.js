@@ -38,4 +38,13 @@ export const useMenuCategoryItems = (categorySlug) => {
   });
 };
 
+export const useMenuCategories = (params = {}) => {
+  return useQuery({
+    queryKey: ['menuCategories', params],
+    queryFn: async () => {
+      const response = await api.get('/api/menu-items/categories', { params });
+      return response.data;
+    },
+  });
+};
 
