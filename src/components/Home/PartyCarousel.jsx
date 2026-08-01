@@ -1,17 +1,30 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBooking } from '../../hooks/useBooking';
+import { resolveImageUrl } from '../../hooks/useSiteContent';
 
 const PartyCarousel = ({ currentItem, partyData, current, setCurrent }) => {
   const navigate = useNavigate();
   const handleBooking = useBooking();
+
+  if (!currentItem) return null;
+
+  const handleButtonClick = () => {
+    if (currentItem.buttonLink) {
+      navigate(currentItem.buttonLink);
+    } else {
+      handleBooking();
+    }
+  };
+
+  const imageUrl = resolveImageUrl(currentItem.image || currentItem.imageUrl);
 
   return (
     <div className="max-w-6xl mx-auto mt-20 mb-0 overflow-hidden shadow-2xl flex flex-col md:flex-row min-h-[400px] md:h-[450px]">
         {/* Left Side: Image */}
         <div className="w-full md:w-[60%] h-[200px] md:h-full relative overflow-hidden">
             <img
-                src={currentItem.image}
+                src={imageUrl}
                 alt={currentItem.title}
                 loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-1000 ease-in-out hover:scale-105"
@@ -33,10 +46,10 @@ const PartyCarousel = ({ currentItem, partyData, current, setCurrent }) => {
             
             <div className="mb-12">
                 <button
-                    onClick={handleBooking}
+                    onClick={handleButtonClick}
                     className="font-posterama bg-[#00AACB] hover:bg-[#E1017D] text-white font-bold py-3 px-8 rounded transition-all duration-300 transform hover:scale-105 uppercase tracking-widest text-sm md:text-base"
                 >
-                    BOOK MY BUNDLE
+                    {currentItem.buttonText || 'BOOK MY BUNDLE'}
                 </button>
             </div>
 
