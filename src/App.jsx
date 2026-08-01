@@ -59,7 +59,7 @@ const LoadingFallback = () => (
 );
 
 const App = () => {
-   const { pathname } = useLocation();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -76,17 +76,17 @@ const App = () => {
         {/* <Route path="/darts" element={<Darts />} /> */}
         {/* <Route path="/golf" element={<Golf />} /> */}
         {/* <Route path="/base" element={<Baseball />} /> */}
-        <Route path="/happy" element={<HappyHour />} />
+        {/* <Route path="/happy" element={<HappyHour />} />
         <Route path="/team" element={<Teamup />} />
         <Route path="/queen" element={<QueensNight />} />
-        <Route path="/king" element={<KingsNight />} />
+        <Route path="/king" element={<KingsNight />} /> */}
         <Route path="/food" element={<FoodCombos />} />
         {/* <Route path="/arcade" element={<Arcade />} /> */}
         {/* <Route path="/dance" element={<Dance />} /> */}
         {/* <Route path="/snooker" element={<Snooker />} /> */}
         <Route path="/bookgames" element={<BookGames />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/date" element={<DateActivity />} />
+        {/* <Route path="/date" element={<DateActivity />} />
         <Route path="/live" element={<Live />} />
         <Route path="/duckpincart" element={<Duckpincart />} />
         <Route path="/golfcart" element={<GolfCart />} />
@@ -96,9 +96,9 @@ const App = () => {
         <Route path="/dartscart" element={<Dartscart />} />
         <Route path="/golfsimulatorcart" element={<Golfsimulatorcart />} />
         <Route path="/karaokecart" element={<Karaokecart />} />
-        <Route path="/brunchcart" element={<Brunchcart />} />
+        <Route path="/brunchcart" element={<Brunchcart />} /> */}
         <Route path="/cocktails" element={<Drinks />} />
-        <Route path="/corporate" element={<Corporatebooking />} />
+        <Route path="/corporates" element={<Corporatebooking />} />
         <Route path="/cookies" element={<Cookies />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
