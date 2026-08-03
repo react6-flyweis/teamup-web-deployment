@@ -78,20 +78,38 @@ const Navbar = ({ topBanner }) => {
         .filter(sub => sub.isHidden !== true)
         .sort((a, b) => (a.order || 0) - (b.order || 0))
         .map(sub => {
-          let link = sub.path || '';
-          const subSlug = sub.slug || sub.name?.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-          const cleanSlug = subSlug ? (subSlug.startsWith('/') ? subSlug.slice(1) : subSlug) : '';
+          const cleanSlug = sub.slug ? (sub.slug.startsWith('/') ? sub.slug.slice(1) : sub.slug) : '';
+          const cleanPath = sub.path ? (sub.path.startsWith('/') ? sub.path.slice(1) : sub.path) : '';
+          const cleanName = sub.name ? sub.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : '';
 
-          if (isChooseGame) {
-            link = `/games/${cleanSlug}`;
+          const itemIdentifier = cleanSlug || cleanPath || cleanName;
+
+          let link = '';
+
+          if (sub.type === 'game') {
+            link = `/games/${itemIdentifier}`;
+          } else if (sub.type === 'group-activity') {
+            link = `/activities/${itemIdentifier}`;
+          } else if (sub.type === 'team-parties' || sub.type === 'team-party' || sub.type === 'team') {
+            link = `/team/${itemIdentifier}`;
+          } else if (sub.type === 'boom-bundle' || sub.type === 'bundle') {
+            link = `/bundles/${itemIdentifier}`;
+          } else if (sub.type === 'queens-night' || sub.type === 'queen-nights' || sub.type === 'night') {
+            link = `/queen/${itemIdentifier}`;
+          } else if (isChooseGame) {
+            link = `/games/${itemIdentifier}`;
           } else if (isGroupActivities) {
-            link = `/activities/${cleanSlug}`;
+            link = `/activities/${itemIdentifier}`;
+          } else {
+            link = `/${itemIdentifier}`;
           }
+
           return {
             id: sub.id,
             name: sub.name,
             icon: sub.icon,
             link: link,
+            type: sub.type,
           };
         });
 
