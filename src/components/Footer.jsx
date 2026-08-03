@@ -9,6 +9,7 @@ import chat from '../assets/chat.svg'
 import fb from '../assets/facebook (6).svg'
 import { Link } from 'react-router-dom';
 import { useLocationContext } from '../context/LocationContext';
+import { useSiteContent } from '../hooks/useSiteContent';
 
 import mic from '../assets/mic.svg'
 const logo = '/assets/logo.svg'
@@ -18,6 +19,19 @@ const avtar = '/assets/avtar.svg'
 const Footer = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { selectedLocation } = useLocationContext();
+    const { data: footerSiteContent } = useSiteContent('footer');
+
+    const footerData = footerSiteContent?.content?.data || footerSiteContent?.data;
+    const companyInfo = footerData?.companyInfo;
+    const socialMediaLinks = footerData?.socialMediaLinks;
+
+    const officeAddress = companyInfo?.officeAddress || '70 Washington Square South, New York, NY 10012, United States';
+    const phoneNumber = selectedLocation?.phone || companyInfo?.phoneNumber || '1800 100 8005';
+    const copyrightText = companyInfo?.copyrightText || '© 2026 TeamUp Inc. All rights reserved';
+
+    const facebookUrl = socialMediaLinks?.facebookUrl || 'https://facebook.com';
+    const instagramUrl = socialMediaLinks?.instagramUrl || 'https://instagram.com';
+    const tiktokUrl = socialMediaLinks?.tiktokUrl || 'https://tiktok.com';
 
     return (
         <footer
@@ -64,7 +78,7 @@ const Footer = () => {
                                     </>
                                 ) : (
                                     <>
-                                        70 Washington Square South, New<br className="hidden sm:block" /> York, NY 10012, United States
+                                        {officeAddress}
                                     </>
                                 )}
                             </p>
@@ -73,7 +87,7 @@ const Footer = () => {
                         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                             <p className="font-noir font-bold flex items-center gap-3 text-[#ABABAB] text-sm md:text-base">
                                 <img src={symbol2} className="w-5 h-5 opacity-80" alt="Phone" />
-                                <span className="text-white font-bold">Phone:</span> {selectedLocation?.phone || '1800 100 8000'}
+                                <span className="text-white font-bold">Phone:</span> {phoneNumber}
                             </p>
                         </div>
                     </div>
@@ -87,15 +101,15 @@ const Footer = () => {
                 className="font-noir font-bold flex flex-col md:flex-row items-center justify-between gap-6 px-6 md:px-12 py-8 border-t border-[#FFE6D8]/10"
             >
                 <p className="text-xs text-[#FFE6D8]/60 text-center md:text-left tracking-wide">
-                    &copy; 2025 Booksy Inc. All rights reserved
+                    {copyrightText}
                 </p>
 
                 <div className="hidden md:block flex-1 h-px bg-[#FFE6D8]/10 mx-8" />
 
                 <div className="flex gap-6 text-white text-2xl md:pr-24">
-                    <a href="#" className="hover:text-[#00AACB] transition-colors"><FaFacebookF /></a>
-                    <a href="#" className="hover:text-[#E1017D] transition-colors"><FaInstagram /></a>
-                    <a href="#" className="hover:text-[#00AACB] transition-colors"><FaTiktok /></a>
+                    {facebookUrl && <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#00AACB] transition-colors"><FaFacebookF /></a>}
+                    {instagramUrl && <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#E1017D] transition-colors"><FaInstagram /></a>}
+                    {tiktokUrl && <a href={tiktokUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#00AACB] transition-colors"><FaTiktok /></a>}
                 </div>
             </div>
 
