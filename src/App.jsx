@@ -80,12 +80,9 @@ const App = () => {
         <Route path="/team" element={<Teamup />} />
         <Route path="/queen" element={<QueensNight />} />
         <Route path="/king" element={<KingsNight />} /> */}
-        <Route path="/food" element={<FoodCombos />} />
         {/* <Route path="/arcade" element={<Arcade />} /> */}
         {/* <Route path="/dance" element={<Dance />} /> */}
         {/* <Route path="/snooker" element={<Snooker />} /> */}
-        <Route path="/bookgames" element={<BookGames />} />
-        <Route path="/cart" element={<Cart />} />
         {/* <Route path="/date" element={<DateActivity />} />
         <Route path="/live" element={<Live />} />
         <Route path="/duckpincart" element={<Duckpincart />} />
@@ -97,7 +94,10 @@ const App = () => {
         <Route path="/golfsimulatorcart" element={<Golfsimulatorcart />} />
         <Route path="/karaokecart" element={<Karaokecart />} />
         <Route path="/brunchcart" element={<Brunchcart />} /> */}
-        <Route path="/cocktails" element={<Drinks />} />
+        <Route path="/street-food" element={<FoodCombos />} />
+        <Route path="/bookgames" element={<BookGames />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/drinks-and-cocktails" element={<Drinks />} />
         <Route path="/corporates" element={<Corporatebooking />} />
         <Route path="/cookies" element={<Cookies />} />
         <Route path="/terms" element={<Terms />} />
@@ -105,11 +105,12 @@ const App = () => {
         <Route path="/blog" element={<Blog />} />
         <Route path="/headline" element={<Headline />} />
         <Route path="/shufflecart" element={<Shufflecart />} />
-        <Route path="/waiver" element={<Waiver />} />
-        <Route path="/birthday" element={<BirthdayParties />} />
+        {/* <Route path="/waiver" element={<Waiver />} /> */}
+        {/* <Route path="/birthday" element={<BirthdayParties />} /> */}
         <Route path="/team-up" element={<TeamUpParties />} />
-        <Route path="/boom-bundles" element={<BoomBundle />} />
-        {/* <Route path="/arcadecart" element={<Arcadecart />} /> */}
+        <Route path="/team/:slug" element={<TeamUpParties />} />
+        <Route path="/bundles/:slug" element={<BoomBundle />} />
+        <Route path="/queen/:slug" element={<QueensNight />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         <Route path="/games/:slug" element={<DynamicGame />} />
