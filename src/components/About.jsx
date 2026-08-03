@@ -128,7 +128,7 @@ const Duckpin = () => {
             </ul>
           </div>
         </div> */}
-        <div className="py-12 px-6 md:px-16 flex flex-col md:flex-row items-center justify-between mt-6">
+        {/* <div className="py-12 px-6 md:px-16 flex flex-col md:flex-row items-center justify-between mt-6">
 
           <div className="relative w-full md:w-1/2 h-[300px] flex items-center justify-center mb-12 mt-4 md:mb-0">
             <motion.img
@@ -199,7 +199,7 @@ const Duckpin = () => {
             Challenge your circle (or spark something new) with AR Axe Throwing, Immersive Mini Golf, Smart Darts, Craft Beer Pong, Luxe Shuffleboard & more.<br />
             Why wait? Lock in your experience. The night won’t play itself. 🎯✨🍸
           </p>
-        </section>
+        </section> */}
 
         <OtherGames showHeading={false} />
         <div
