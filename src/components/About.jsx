@@ -151,7 +151,7 @@ const Duckpin = () => {
             />
           </div>
 
-          {/* Right - Text Content */}
+          Right - Text Content
           <div className="w-full md:w-1/2 md:pl-10 text-center md:text-left py-4">
             <h2 style={{ fontFamily: 'Posterama2001W04' }} className="text-2xl sm:text-3xl md:text-[40px] font-bold text-gray-800 mb-4">PARTY HARD. PLAY HARDER.</h2>
             <p style={{ fontFamily: 'Noir Semi' }} className="text-gray-600 mb-6 text-sm sm:text-base md:text-lg">
