@@ -4,7 +4,7 @@ import { useGames } from "../../hooks/useGames";
 import { useBooking } from "../../hooks/useBooking";
 import { resolveImageUrl } from "../../hooks/useSiteContent";
 
-const OtherGames = ({ excludeSlug, showHeading = true, items }) => {
+const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) => {
   const { data, isLoading, error } = useGames();
   const handleBooking = useBooking();
   const navigate = useNavigate();
@@ -35,7 +35,14 @@ const OtherGames = ({ excludeSlug, showHeading = true, items }) => {
   } else {
     const apiGames = data?.games || [];
     games = apiGames
-      .filter((game) => game.isActive !== false && game.slug !== excludeSlug)
+      .filter((game) => {
+        if (game.isActive === false) return false;
+        if (game.slug === excludeSlug) return false;
+        if (Array.isArray(filterGameIds) && filterGameIds.length > 0) {
+          return filterGameIds.includes(game._id) || filterGameIds.includes(game.id);
+        }
+        return true;
+      })
       .map((game) => ({
         title: game.name,
         image: resolveImageUrl(game.imageUrl || ""),

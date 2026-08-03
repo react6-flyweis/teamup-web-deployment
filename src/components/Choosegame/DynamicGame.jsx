@@ -12,6 +12,7 @@ import dollar from '../../assets/dollar.svg';
 import wheel from '../../assets/wheel.svg';
 import OtherGames from '../Home/OtherGames';
 import { useGame } from '../../hooks/useGames';
+import { resolveImageUrl } from '../../hooks/useSiteContent';
 
 const duck = '/assets/dance.svg';
 const texture = '/assets/texture.svg';
@@ -41,6 +42,16 @@ const DynamicGame = () => {
   }
 
   const game = data.game;
+  const gameName = game.name || game.gameName || 'Game';
+  const heroImage = resolveImageUrl(game.imageUrl || game.image) || duck;
+  const headlineText = game.headline || '';
+  const durationText = game.duration || game.timeOption || '-';
+  const priceText = game.pricePerPerson !== undefined ? `$${game.pricePerPerson}` : '-';
+  const minAgeText = game.minimumAgeRequirement || '-';
+  const wheelchairText = game.wheelchairAccessible !== undefined ? (game.wheelchairAccessible ? 'Yes' : 'No') : '-';
+  const idRequirementText = game.idRequired !== undefined ? (game.idRequired ? 'ID Required' : 'No ID Required') : '';
+  const capacityText = game.peopleAllowedPerLane !== undefined ? `${game.peopleAllowedPerLane} People` : '-';
+  const lanesText = game.totalLanes !== undefined ? `${game.totalLanes} Lanes` : '-';
 
   const columnVariants = {
     hidden: { opacity: 0, x: -100 },
@@ -60,7 +71,7 @@ const DynamicGame = () => {
       <div className="relative md:h-screen w-full overflow-hidden">
         <Navbar />
         <div
-          style={{ backgroundImage: `url(${game.imageUrl || duck})` }}
+          style={{ backgroundImage: `url(${heroImage})` }}
           className="absolute top-12 left-0 w-full h-full bg-cover bg-center object-cover z-0"
         ></div>
 
@@ -69,7 +80,7 @@ const DynamicGame = () => {
         {/* Content */}
         <div className="relative z-20 flex flex-col items-center justify-center md:h-full py-20 text-center px-4 text-white">
           <h1 style={{ fontFamily: 'Posterama2001W04' }} className="text-3xl md:text-[64px] font-semibold mb-4 leading-snug">
-            {game.name}
+            {gameName}
           </h1>
           <button
             onClick={handleBooking}
@@ -100,9 +111,11 @@ const DynamicGame = () => {
 
       <div className="w-full bg-fixed bg-cover bg-center" style={{ backgroundImage: `url(${texture})` }}>
         <section className="text-center pt-12 px-4">
-          <h2 style={{ fontFamily: 'Posterama2001W04' }} className="text-xl md:text-[44px] font-bold text-[#292524] mb-4 uppercase leading-tight tracking-wide">
-            {game.features && game.features.length > 0 ? game.features.join(' • ') : '-'}
-          </h2>
+          {headlineText && (
+            <h2 style={{ fontFamily: 'Posterama2001W04' }} className="text-xl md:text-[44px] font-bold text-[#292524] mb-4 uppercase leading-tight tracking-wide">
+              {headlineText}
+            </h2>
+          )}
 
           <p style={{ fontFamily: 'Noir Semi' }} className="max-w-4xl mx-auto text-sm md:text-base text-[#292524]">
             {game.description}
@@ -122,17 +135,22 @@ const DynamicGame = () => {
               <div className="flex items-center gap-3">
                 <img src={per} alt="user" className="w-auto h-[90px] min-[820px]:h-[110px]" />
                 <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                  <div className="text-xs min-[820px]:text-sm uppercase">Category</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">{game.category || '-'}</div>
-                  <div className="text-xs min-[820px]:text-sm uppercase">Activity</div>
+                  <div className="text-xs min-[820px]:text-sm uppercase">Capacity</div>
+                  <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">
+                    {capacityText}
+                  </div>
+                  <div className="text-xs min-[820px]:text-sm uppercase">Per Lane</div>
                 </div>
               </div>
               <div className="border-b border-[#00AACB] mx-2"></div>
               <div className="flex items-center gap-3">
-                <img src={lane} alt="bowling" className="w-auto h-[90px] min-[820px]:h-[105px]" />
+                <img src={lane} alt="lanes" className="w-auto h-[90px] min-[820px]:h-[105px]" />
                 <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                  <div className="text-xs min-[820px]:text-sm uppercase">Setup</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold uppercase">{game.tags && game.tags.length > 0 ? game.tags[0] : '-'}</div>
+                  <div className="text-xs min-[820px]:text-sm uppercase">Lanes</div>
+                  <div className="text-lg min-[820px]:text-xl font-bold uppercase">
+                    {lanesText}
+                  </div>
+                  <div className="text-xs min-[820px]:text-sm uppercase">Total Lanes</div>
                 </div>
               </div>
             </div>
@@ -151,8 +169,8 @@ const DynamicGame = () => {
                 <img src={clock2} alt="clock" className="w-auto h-[90px] min-[820px]:h-[110px]" />
                 <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
                   <div className="text-xs min-[820px]:text-sm uppercase">Time</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{game.duration || '-'}</div>
-                  <div className="text-xs min-[820px]:text-sm uppercase">Minutes</div>
+                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{durationText}</div>
+                  <div className="text-xs min-[820px]:text-sm uppercase">Duration</div>
                 </div>
               </div>
               <div className="border-b border-[#00AACB]"></div>
@@ -160,7 +178,7 @@ const DynamicGame = () => {
                 <img src={dollar} alt="dollar" className="w-auto h-[90px] min-[820px]:h-[105px]" />
                 <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
                   <div className="text-xs min-[820px]:text-sm uppercase">Price</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{game.priceFrom !== undefined ? `$${game.priceFrom}` : '-'}</div>
+                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{priceText}</div>
                   <div className="text-xs min-[820px]:text-sm uppercase">Per Person</div>
                 </div>
               </div>
@@ -180,7 +198,8 @@ const DynamicGame = () => {
                 <img src={min} alt="group" className="w-auto h-[90px] min-[820px]:h-[110px]" />
                 <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
                   <div className="text-xs min-[820px]:text-sm uppercase">Minimum Age</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold">-</div>
+                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{minAgeText}</div>
+                  <div className="text-xs min-[820px]:text-sm uppercase">Requirement</div>
                 </div>
               </div>
               <div className="border-b border-[#00AACB]"></div>
@@ -188,39 +207,15 @@ const DynamicGame = () => {
                 <img src={wheel} alt="wheelchair" className="w-auto h-[90px] min-[820px]:h-[105px]" />
                 <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
                   <div className="text-xs min-[820px]:text-sm uppercase">Wheelchair Access</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">-</div>
-                  <div className="text-xs min-[820px]:text-sm uppercase">-</div>
+                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{wheelchairText}</div>
+                  {idRequirementText && (
+                    <div className="text-xs min-[820px]:text-sm uppercase">{idRequirementText}</div>
+                  )}
                 </div>
               </div>
             </div>
           </motion.div>
         </div>
-
-        {game.packages && game.packages.length > 0 && (
-          <section className="max-w-5xl mx-auto px-4 py-12">
-            <h3 style={{ fontFamily: 'Posterama2001W04' }} className="text-center text-2xl md:text-[36px] text-[#292524] font-bold mb-8 uppercase">
-              Available Packages
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {game.packages.map((pkg) => (
-                <div key={pkg._id} className="bg-black text-white p-6 rounded-2xl shadow-xl flex flex-col justify-between border border-[#00AACB]/30 hover:border-[#E1017D] transition-all duration-300">
-                  <div>
-                    <h4 style={{ fontFamily: 'Posterama2001W04' }} className="text-xl font-bold text-[#00AACB] mb-2 uppercase">
-                      {pkg.title}
-                    </h4>
-                    <p style={{ fontFamily: 'Noir Semi' }} className="text-sm text-gray-300 mb-4">
-                      {pkg.description}
-                    </p>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-gray-800 flex justify-between items-center">
-                    <span className="text-sm text-gray-400">{pkg.duration}</span>
-                    <span className="text-2xl font-bold text-[#E1017D]">${pkg.price}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
         <div className="flex justify-center mt-8">
           <button
