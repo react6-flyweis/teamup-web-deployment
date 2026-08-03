@@ -62,7 +62,7 @@ const Duckpin = () => {
           {isLoading ? (
             <p className="text-center">Loading...</p>
           ) : isError ? null : content ? (
-            <div style={{ fontFamily: 'Noir Pro' }} className="space-y-4">
+            <div style={{ fontFamily: 'Noir Pro' }} className="space-y-4 break-words overflow-hidden">
               {parseHtmlToReact(content)}
             </div>
           ) : null}

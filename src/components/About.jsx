@@ -65,7 +65,7 @@ const Duckpin = () => {
             About Team up
           </h2>
 
-          <div style={{ fontFamily: 'Noir Semi' }} className="max-w-5xl mx-auto text-sm md:text-base text-[#292524]">
+          <div style={{ fontFamily: 'Noir Semi' }} className="max-w-5xl mx-auto text-sm md:text-base text-[#292524] break-words overflow-hidden">
             {isLoading ? (
               <p>Loading...</p>
             ) : isError ? null : content ? (
