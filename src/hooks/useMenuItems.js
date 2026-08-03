@@ -29,12 +29,10 @@ export const useMenuCategoryItems = (categorySlug) => {
   return useQuery({
     queryKey: ['menuCategoryItems', categorySlug],
     queryFn: async () => {
-      const response = await api.get('/api/menu/items', {
-        params: { categorySlug },
-      });
+      const params = categorySlug ? { categorySlug } : {};
+      const response = await api.get('/api/menu/items', { params });
       return response.data;
     },
-    enabled: !!categorySlug,
   });
 };
 

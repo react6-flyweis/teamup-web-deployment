@@ -1,18 +1,23 @@
-import React from 'react' 
+import React from 'react'
 import { useBooking } from '../../hooks/useBooking';
+import { motion } from 'framer-motion';
 import Navbar from '../Navbar'
+
+// Category icons
 import pizza from '../../assets/pizza.svg'
 import beer from '../../assets/beer.svg'
 import burger from '../../assets/burger.svg'
 import glass from '../../assets/glasses.svg'
 import pint from '../../assets/pint.svg'
-import { motion } from 'framer-motion';
 import heart from '../../assets/heart.svg'
 import wings from '../../assets/wings.svg'
 import burger2 from '../../assets/burger2.svg'
 import tube from '../../assets/tube.svg'
 import chicken from '../../assets/chicken.svg'
 import Footer from '../Footer'
+
+
+// public url
 const texture = '/assets/texture.svg'
 const bg = '/assets/bg3.svg'
 const arrow = '/assets/arrow2.svg'
@@ -21,7 +26,7 @@ import { useMenuCategoryItems } from '../../hooks/useMenuItems';
 
 const FoodCombos = () => {
   const handleBooking = useBooking();
-  const { data, isLoading, error } = useMenuCategoryItems('street-food');
+  const { data, isLoading, error } = useMenuCategoryItems();
 
   if (isLoading) {
     return (
@@ -36,8 +41,8 @@ const FoodCombos = () => {
       <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-4 text-center">
         <h2 className="text-2xl mb-4 font-bold">Failed to load street food menu</h2>
         <p className="text-gray-400 mb-6">{error.message || 'Something went wrong.'}</p>
-        <button 
-          onClick={() => window.location.reload()} 
+        <button
+          onClick={() => window.location.reload()}
           className="bg-[#E1017D] px-6 py-2 rounded-full text-white font-bold"
         >
           Retry
@@ -46,22 +51,22 @@ const FoodCombos = () => {
     );
   }
 
-  const apiItems = data?.items || [];
+  const apiItems = data?.items || (Array.isArray(data) ? data : []);
 
   const slideFromLeft = {
-      hidden: { x: '-100vw', opacity: 0 },
-      visible: (i) => ({
-          x: 0,
-          opacity: 1,
-          transition: {
-              delay: i * 0.2,
-              duration: 0.8,
-              ease: 'easeOut',
-          },
-      }),
+    hidden: { x: '-100vw', opacity: 0 },
+    visible: (i) => ({
+      x: 0,
+      opacity: 1,
+      transition: {
+        delay: i * 0.2,
+        duration: 0.8,
+        ease: 'easeOut',
+      },
+    }),
   };
 
-  // Static Combos Data (commented out UI below)
+  // Static Combos Data (fallback)
   const staticCombos = [
     {
       title: "BOOM COMBO 1",
@@ -73,70 +78,98 @@ const FoodCombos = () => {
     }
   ];
 
-  // Static Fallback Menu Data
-  const staticMenuData = [
-    {
-      icon: heart,
-      iconStyle: "top-[-34px] right-[36px]",
-      title: "STREET FOOD",
-      items: [
-        { name: "BBQ CHICKEN WINGS", tags: " (GF)", description: "Crispy chicken wings tossed in rich BBQ sauce", calories: "550 kcal" },
-        { name: "CHEESY NACHOS", tags: " (V)", description: "Tortilla chips loaded with melted cheese & jalapenos", calories: "620 kcal" }
-      ],
-      sizeClass: { width: "w-full", height: "auto" },
-      positionStyle: "translate-x-0 translate-y-0",
-    },
-    {
-      icon: wings,
-      iconStyle: "top-[-10px] right-[1px]",
-      title: "WINGS & SIDES",
-      items: [
-        { name: "BUFFALO WINGS", tags: " (GF)", description: "Spicy buffalo glazed wings", calories: "580 kcal" },
-        { name: "LOADED TOTS", tags: " (V)", description: "Crispy tater tots topped with cheese and chives", calories: "450 kcal" }
-      ],
-      sizeClass: { width: "w-full", height: "auto" },
-      positionStyle: "translate-x-0 translate-y-0",
-    }
-  ];
+  // Category to Icon Mapping
+  const CATEGORY_ICON_MAP = {
+    'street-food': heart,
+    'street food': heart,
+    'wings-sides': wings,
+    'wings & sides': wings,
+    'burgers': burger2,
+    'burger': burger2,
+    'mains': chicken,
+    'sides': tube,
+    'drinks': pint,
+    'beverages': glass,
+    'food-combos': pizza,
+    'food combos': pizza,
+  };
 
-  // Group items by their first tag
-  const groupsMap = {};
+  const getCategoryIcon = (key, index) => {
+    if (!key) return iconsList[index % iconsList.length];
+    const normalizedKey = key.toString().toLowerCase().trim();
+    if (CATEGORY_ICON_MAP[normalizedKey]) {
+      return CATEGORY_ICON_MAP[normalizedKey];
+    }
+    const matchedKey = Object.keys(CATEGORY_ICON_MAP).find(
+      (k) => normalizedKey.includes(k) || k.includes(normalizedKey)
+    );
+    return matchedKey ? CATEGORY_ICON_MAP[matchedKey] : iconsList[index % iconsList.length];
+  };
+
+  const combosList = [];
+  const nonComboGroupsMap = {};
   const iconsList = [heart, wings, burger2, tube, chicken, arrow];
+  let comboCategoryDescription = '';
 
   apiItems.forEach((apiItem) => {
-    const groupKey = (apiItem.tags && apiItem.tags.length > 0 && apiItem.tags[0])
-      ? apiItem.tags[0].toString().trim()
-      : 'Other';
+    const catObj = apiItem.categoryId;
+    const catSlug = (typeof catObj === 'object' ? catObj?.slug : (typeof catObj === 'string' ? catObj : '')) || '';
+    const catName = (typeof catObj === 'object' ? catObj?.name : '') || '';
 
-    const remainingTags = apiItem.tags && apiItem.tags.length > 1
-      ? apiItem.tags.slice(1).join(', ')
-      : '';
+    const isCombo = catSlug === 'food-combos' || catName.toLowerCase().includes('combo') || apiItem.slug?.includes('combo');
 
-    const mappedItem = {
-      name: apiItem.name,
-      tags: remainingTags ? ` (${remainingTags})` : '',
-      description: apiItem.description,
-      calories: apiItem.calories
-    };
+    if (isCombo) {
+      if (typeof catObj === 'object' && catObj?.description && !comboCategoryDescription) {
+        comboCategoryDescription = catObj.description;
+      }
 
-    if (!groupsMap[groupKey]) {
-      groupsMap[groupKey] = [];
+      let parsedItems = [];
+      if (Array.isArray(apiItem.items) && apiItem.items.length > 0) {
+        parsedItems = apiItem.items;
+      } else if (apiItem.description) {
+        parsedItems = apiItem.description
+          .split(/(?<=\.)\s+|\n+/)
+          .map((s) => s.trim().replace(/\.$/, ''))
+          .filter(Boolean);
+      }
+
+      combosList.push({
+        title: apiItem.name,
+        items: parsedItems.length > 0 ? parsedItems : [apiItem.description || apiItem.name],
+      });
+    } else {
+      let groupKey = catName || (apiItem.tags && apiItem.tags.length > 0 && apiItem.tags[0] ? apiItem.tags[0].toString().trim() : 'STREET FOOD');
+
+      const remainingTags = apiItem.tags && apiItem.tags.length > 0
+        ? apiItem.tags.join(', ')
+        : '';
+
+      const mappedItem = {
+        name: apiItem.name,
+        tags: remainingTags ? ` (${remainingTags})` : '',
+        description: apiItem.description,
+        calories: apiItem.calories
+      };
+
+      if (!nonComboGroupsMap[groupKey]) {
+        nonComboGroupsMap[groupKey] = [];
+      }
+      nonComboGroupsMap[groupKey].push(mappedItem);
     }
-    groupsMap[groupKey].push(mappedItem);
   });
 
-  const categoryDescription = apiItems[0]?.categoryId?.description || '';
+  const categoryDescription = comboCategoryDescription || apiItems[0]?.categoryId?.description || '';
 
-  const dynamicMenuData = Object.keys(groupsMap).map((groupTitle, index) => ({
-    icon: iconsList[index % iconsList.length],
+  const dynamicCombos = combosList.length > 0 ? combosList : staticCombos;
+
+  const menuData = Object.keys(nonComboGroupsMap).map((groupTitle, index) => ({
+    icon: getCategoryIcon(groupTitle, index),
     iconStyle: "top-[-34px] right-[36px]",
     title: groupTitle.toUpperCase(),
-    items: groupsMap[groupTitle],
+    items: nonComboGroupsMap[groupTitle],
     sizeClass: { width: "w-full", height: "auto" },
     positionStyle: "translate-x-0 translate-y-0",
   }));
-
-  const menuData = dynamicMenuData.length > 0 ? dynamicMenuData : staticMenuData;
 
   return (
     <>
@@ -154,8 +187,7 @@ const FoodCombos = () => {
           </p>
         </section>
 
-        {/* Combo Section UI (Hidden / Commented Out) */}
-        {/*
+        {/* Combo Section UI */}
         <div className="flex flex-wrap justify-center lg:justify-center items-start gap-4 p-6 mt-12">
           <motion.div
             initial="hidden"
@@ -183,7 +215,7 @@ const FoodCombos = () => {
             ))}
           </motion.div>
 
-          {staticCombos.map((combo, index) => (
+          {dynamicCombos.map((combo, index) => (
             <div key={index} className="flex flex-col items-center w-full max-w-[280px] lg:w-[280px] mx-auto lg:mx-0">
               <h3 style={{ fontFamily: 'Posterama2001W04' }} className="text-black font-bold mt-[18px] md:mt-[-50px] text-center">
                 {combo.title}
@@ -193,7 +225,7 @@ const FoodCombos = () => {
               </p>
               <div style={{ fontFamily: 'Noir Semi' }} className="bg-black text-[#00AACB] p-6 rounded-[40px] w-full text-center h-[500px] overflow-y-auto">
                 <motion.ul
-                  className="space-y-10 text-[21px]"
+                  className="space-y-6 text-[20px]"
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.3 }}
@@ -208,7 +240,6 @@ const FoodCombos = () => {
             </div>
           ))}
         </div>
-        */}
 
         <section className="text-center pt-12 px-4">
           <h2 style={{ fontFamily: 'Posterama2001W04' }} className="text-xl md:text-[44px] font-bold text-[#292524] mb-4 uppercase leading-tight tracking-wide">
@@ -216,7 +247,7 @@ const FoodCombos = () => {
           </h2>
 
           <p style={{ fontFamily: 'Noir Semi' }} className="max-w-5xl mx-auto text-sm md:text-base text-[#292524]">
-            {categoryDescription || "Explore our selection of wings, sauces, burgers, sides, and loaded fries."}
+            Explore our selection of wings, sauces, burgers, sides, and loaded fries.
           </p>
         </section>
 
