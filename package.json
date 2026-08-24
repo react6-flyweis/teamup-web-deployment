@@ -2,6 +2,7 @@
   "name": "team-up",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.30.0",
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "@tanstack/react-query": "^5.101.0",
