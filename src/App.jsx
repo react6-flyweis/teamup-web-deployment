@@ -94,6 +94,7 @@ const App = () => {
         <Route path="/golfsimulatorcart" element={<Golfsimulatorcart />} />
         <Route path="/karaokecart" element={<Karaokecart />} />
         <Route path="/brunchcart" element={<Brunchcart />} /> */}
+        {/* <Route path="/birthday" element={<BirthdayParties />} /> */}
         <Route path="/street-food" element={<FoodCombos />} />
         <Route path="/bookgames" element={<BookGames />} />
         <Route path="/cart" element={<Cart />} />
@@ -105,8 +106,7 @@ const App = () => {
         <Route path="/blog" element={<Blog />} />
         <Route path="/headline" element={<Headline />} />
         <Route path="/shufflecart" element={<Shufflecart />} />
-        {/* <Route path="/waiver" element={<Waiver />} /> */}
-        {/* <Route path="/birthday" element={<BirthdayParties />} /> */}
+        <Route path="/waiver" element={<Waiver />} />
         <Route path="/team-up" element={<TeamUpParties />} />
         <Route path="/team/:slug" element={<TeamUpParties />} />
         <Route path="/bundles/:slug" element={<BoomBundle />} />

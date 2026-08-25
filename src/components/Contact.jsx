@@ -11,6 +11,8 @@ import { useLocationContext } from '../context/LocationContext';
 
 const texture = '/assets/stepdown.svg'
 
+const MIN_AGE = 18;
+
 const contactSchema = z.object({
   enquiryType: z.enum(['General', 'Support', 'Sales'], {
     errorMap: () => ({ message: 'Please select an enquiry type' })
@@ -28,8 +30,8 @@ const contactSchema = z.object({
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
       age--;
     }
-    return age >= 13;
-  }, { message: 'You must be at least 13 years old' }),
+    return age >= MIN_AGE;
+  }, { message: `You must be at least ${MIN_AGE} years old` }),
   location: z.string().min(1, 'Location is required'),
   comment: z.string().min(1, 'Comment is required'),
   source: z.string().default('contact-page')
@@ -40,7 +42,7 @@ const Contact = () => {
 
   const getMaxDate = () => {
     const today = new Date();
-    today.setFullYear(today.getFullYear() - 13);
+    today.setFullYear(today.getFullYear() - MIN_AGE);
     return today.toISOString().split('T')[0];
   };
 

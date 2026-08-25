@@ -8,7 +8,6 @@ import mail from '../assets/mail.svg'
 import chat from '../assets/chat.svg'
 import fb from '../assets/facebook (6).svg'
 import { Link } from 'react-router-dom';
-import { useLocationContext } from '../context/LocationContext';
 import { useSiteContent } from '../hooks/useSiteContent';
 
 import mic from '../assets/mic.svg'
@@ -18,20 +17,19 @@ const avtar = '/assets/avtar.svg'
 
 const Footer = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const { selectedLocation } = useLocationContext();
     const { data: footerSiteContent } = useSiteContent('footer');
 
     const footerData = footerSiteContent?.content?.data || footerSiteContent?.data;
     const companyInfo = footerData?.companyInfo;
     const socialMediaLinks = footerData?.socialMediaLinks;
 
-    const officeAddress = companyInfo?.officeAddress || '70 Washington Square South, New York, NY 10012, United States';
-    const phoneNumber = selectedLocation?.phone || companyInfo?.phoneNumber || '1800 100 8005';
-    const copyrightText = companyInfo?.copyrightText || '© 2026 TeamUp Inc. All rights reserved';
+    const officeAddress = companyInfo?.officeAddress || '';
+    const phoneNumber = companyInfo?.phoneNumber || '';
+    const copyrightText = companyInfo?.copyrightText || '';
 
-    const facebookUrl = socialMediaLinks?.facebookUrl || 'https://facebook.com';
-    const instagramUrl = socialMediaLinks?.instagramUrl || 'https://instagram.com';
-    const tiktokUrl = socialMediaLinks?.tiktokUrl || 'https://tiktok.com';
+    const facebookUrl = socialMediaLinks?.facebookUrl || '';
+    const instagramUrl = socialMediaLinks?.instagramUrl || '';
+    const tiktokUrl = socialMediaLinks?.tiktokUrl || '';
 
     return (
         <footer
@@ -67,29 +65,25 @@ const Footer = () => {
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 text-center sm:text-left">
                     <img src={logo} alt="Team Up Logo" className="w-[160px] md:w-[200px] h-auto drop-shadow-lg" />
                     <div className="space-y-4">
-                        <div>
-                            <p className="font-noir font-bold text-white text-sm uppercase tracking-widest opacity-60 mb-1">
-                                Office Address
-                            </p>
-                            <p className="font-noir font-bold text-[#ABABAB] text-sm md:text-base leading-relaxed">
-                                {selectedLocation ? (
-                                    <>
-                                        {selectedLocation.address}, {selectedLocation.city},<br className="hidden sm:block" /> {selectedLocation.state}
-                                    </>
-                                ) : (
-                                    <>
-                                        {officeAddress}
-                                    </>
-                                )}
-                            </p>
-                        </div>
+                        {officeAddress && (
+                            <div>
+                                <p className="font-noir font-bold text-white text-sm uppercase tracking-widest opacity-60 mb-1">
+                                    Office Address
+                                </p>
+                                <p className="font-noir font-bold text-[#ABABAB] text-sm md:text-base leading-relaxed">
+                                    {officeAddress}
+                                </p>
+                            </div>
+                        )}
 
-                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                            <p className="font-noir font-bold flex items-center gap-3 text-[#ABABAB] text-sm md:text-base">
-                                <img src={symbol2} className="w-5 h-5 opacity-80" alt="Phone" />
-                                <span className="text-white font-bold">Phone:</span> {phoneNumber}
-                            </p>
-                        </div>
+                        {phoneNumber && (
+                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                                <p className="font-noir font-bold flex items-center gap-3 text-[#ABABAB] text-sm md:text-base">
+                                    <img src={symbol2} className="w-5 h-5 opacity-80" alt="Phone" />
+                                    <span className="text-white font-bold">Phone:</span> {phoneNumber}
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -128,7 +122,7 @@ const Footer = () => {
                             <div
                                 className="font-posterama text-[18px] sm:text-[20px] font-bold leading-tight"
                             >
-                                PHILLIP DOKIDIS <br/>
+                                PHILLIP DOKIDIS <br />
                                 <span className="text-xs font-normal opacity-80">(YOUR PERSONAL ASSISTANCE)</span>
                             </div>
                         </div>
