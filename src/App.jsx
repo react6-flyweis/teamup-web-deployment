@@ -90,11 +90,11 @@ const App = () => {
         <Route path="/lasercart" element={<LaserCart />} />
         <Route path="/axecart" element={<AxeCart />} />
         <Route path="/archerycart" element={<Archerycart />} />
-        {/* <Route path="/birthday" element={<BirthdayParties />} /> */}
         <Route path="/dartscart" element={<Dartscart />} />
         <Route path="/golfsimulatorcart" element={<Golfsimulatorcart />} />
         <Route path="/karaokecart" element={<Karaokecart />} />
         <Route path="/brunchcart" element={<Brunchcart />} /> */}
+        {/* <Route path="/birthday" element={<BirthdayParties />} /> */}
         <Route path="/street-food" element={<FoodCombos />} />
         <Route path="/bookgames" element={<BookGames />} />
         <Route path="/cart" element={<Cart />} />
