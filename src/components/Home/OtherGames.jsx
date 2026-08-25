@@ -1,5 +1,5 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+
+import { Link } from "react-router-dom";
 import { useGames } from "../../hooks/useGames";
 import { useBooking } from "../../hooks/useBooking";
 import { resolveImageUrl } from "../../hooks/useSiteContent";
@@ -7,7 +7,6 @@ import { resolveImageUrl } from "../../hooks/useSiteContent";
 const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) => {
   const { data, isLoading, error } = useGames();
   const handleBooking = useBooking();
-  const navigate = useNavigate();
 
   if (!items && isLoading) {
     return (
@@ -86,7 +85,7 @@ const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) =
                   {game.title}
                 </h3>
                 <div className="w-full flex flex-row items-center gap-3">
-                  <button 
+                  <button
                     onClick={() => {
                       if (game.link) {
                         navigate(game.link);
@@ -99,7 +98,7 @@ const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) =
                     {game.buttonText}
                   </button>
                   {game.link && (
-                    <Link 
+                    <Link
                       to={game.link}
                       className="flex-1 bg-[#292524] hover:bg-black text-white py-3 text-[14px] md:text-[16px] font-bold rounded text-center uppercase tracking-tighter border border-white/20"
                     >
