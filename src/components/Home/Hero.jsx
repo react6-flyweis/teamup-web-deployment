@@ -1,17 +1,16 @@
-import React from 'react';
-import { useLocationContext } from '../../context/LocationContext';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { resolveImageUrl } from '../../hooks/useSiteContent';
+import { handleNavigation } from '../../utils/navigation';
 
-const Hero = ({ handleClick, heroData, topBanner }) => {
-  const { selectedLocation } = useLocationContext();
+const Hero = ({ heroData, topBanner }) => {
+  // const { selectedLocation } = useLocationContext();
   const navigate = useNavigate();
 
   const title = heroData?.title;
-  const locationText = selectedLocation?.city && selectedLocation?.state 
-    ? `${selectedLocation.city}, ${selectedLocation.state}` 
-    : '';
+  // const locationText = selectedLocation?.city && selectedLocation?.state 
+  //   ? `${selectedLocation.city}, ${selectedLocation.state}` 
+  //   : '';
   const subtitle = heroData?.subtitle;
 
   const primaryText = heroData?.primaryButton?.text;
@@ -21,17 +20,13 @@ const Hero = ({ handleClick, heroData, topBanner }) => {
 
   const handlePrimaryClick = () => {
     if (primaryLink) {
-      navigate(primaryLink);
-    } else {
-      handleClick();
+      handleNavigation(primaryLink, navigate);
     }
   };
 
   const handleSecondaryClick = () => {
     if (secondaryLink) {
-      navigate(secondaryLink);
-    } else {
-      handleClick();
+      handleNavigation(secondaryLink, navigate);
     }
   };
 

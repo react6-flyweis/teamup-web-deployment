@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBooking } from '../../hooks/useBooking';
 import { resolveImageUrl } from '../../hooks/useSiteContent';
+import { handleNavigation } from '../../utils/navigation';
 
 const EventsSection = ({ bg2, queen, king, nightsOutData }) => {
   const handleBooking = useBooking();
@@ -18,7 +19,7 @@ const EventsSection = ({ bg2, queen, king, nightsOutData }) => {
 
   const handleButtonClick = () => {
     if (buttonLink) {
-      navigate(buttonLink);
+      handleNavigation(buttonLink, navigate);
     } else {
       handleBooking();
     }
