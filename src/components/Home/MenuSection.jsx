@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { resolveImageUrl } from '../../hooks/useSiteContent';
+import { handleNavigation } from '../../utils/navigation';
 
 const MenuSection = ({ bits, drinks, bitesData, drinksData }) => {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ const MenuSection = ({ bits, drinks, bitesData, drinksData }) => {
             </h2>
 
             <button
-              onClick={() => bitesLink && navigate(bitesLink)}
+              onClick={() => bitesLink && handleNavigation(bitesLink, navigate)}
               className="bg-cyan-500 hover:bg-[#E1017D] w-full max-w-[300px] sm:max-w-[400px] lg:max-w-[500px] mt-4 sm:mt-8 lg:mt-24 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 lg:py-4 rounded transition-colors uppercase"
             >
               VIEW MENU
@@ -71,7 +72,7 @@ const MenuSection = ({ bits, drinks, bitesData, drinksData }) => {
             </h2>
 
             <button
-              onClick={() => drinksLink && navigate(drinksLink)}
+              onClick={() => drinksLink && handleNavigation(drinksLink, navigate)}
               className="font-posterama bg-cyan-500 hover:bg-[#E1017D] w-full max-w-[300px] sm:max-w-[400px] lg:max-w-[500px] mt-4 sm:mt-8 lg:mt-24 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 lg:py-4 rounded transition-colors uppercase"
             >
               VIEW MENU

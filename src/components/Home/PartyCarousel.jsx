@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBooking } from '../../hooks/useBooking';
 import { resolveImageUrl } from '../../hooks/useSiteContent';
+import { handleNavigation } from '../../utils/navigation';
 
 const PartyCarousel = ({ currentItem, partyData, current, setCurrent }) => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const PartyCarousel = ({ currentItem, partyData, current, setCurrent }) => {
 
   const handleButtonClick = () => {
     if (currentItem.buttonLink) {
-      navigate(currentItem.buttonLink);
+      handleNavigation(currentItem.buttonLink, navigate);
     } else {
       handleBooking();
     }

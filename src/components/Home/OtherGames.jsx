@@ -1,12 +1,14 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGames } from "../../hooks/useGames";
 import { useBooking } from "../../hooks/useBooking";
 import { resolveImageUrl } from "../../hooks/useSiteContent";
+import { handleNavigation, isExternalUrl, getHref } from "../../utils/navigation";
 
 const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) => {
   const { data, isLoading, error } = useGames();
   const handleBooking = useBooking();
+  const navigate = useNavigate();
 
   if (!items && isLoading) {
     return (
@@ -88,7 +90,7 @@ const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) =
                   <button
                     onClick={() => {
                       if (game.link) {
-                        navigate(game.link);
+                        handleNavigation(game.link, navigate);
                       } else {
                         handleBooking();
                       }
@@ -98,12 +100,21 @@ const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) =
                     {game.buttonText}
                   </button>
                   {game.link && (
-                    <Link
-                      to={game.link}
-                      className="flex-1 bg-[#292524] hover:bg-black text-white py-3 text-[14px] md:text-[16px] font-bold rounded text-center uppercase tracking-tighter border border-white/20"
-                    >
-                      LEARN MORE
-                    </Link>
+                    isExternalUrl(game.link) ? (
+                      <a
+                        href={getHref(game.link)}
+                        className="flex-1 bg-[#292524] hover:bg-black text-white py-3 text-[14px] md:text-[16px] font-bold rounded text-center uppercase tracking-tighter border border-white/20"
+                      >
+                        LEARN MORE
+                      </a>
+                    ) : (
+                      <Link
+                        to={game.link}
+                        className="flex-1 bg-[#292524] hover:bg-black text-white py-3 text-[14px] md:text-[16px] font-bold rounded text-center uppercase tracking-tighter border border-white/20"
+                      >
+                        LEARN MORE
+                      </Link>
+                    )
                   )}
                 </div>
               </div>
