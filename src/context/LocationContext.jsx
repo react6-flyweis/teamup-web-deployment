@@ -1,15 +1,13 @@
-import { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { createContext, useState, useContext, useEffect } from 'react';
 import { useLocations } from '../hooks/useLocations';
 
 const LocationContext = createContext();
 
 export const LocationProvider = ({ children }) => {
-  const queryClient = useQueryClient();
   const { data, isLoading } = useLocations();
   const apiLocations = data?.locations || [];
 
-  const [selectedLocation, setSelectedLocationState] = useState(() => {
+  const [selectedLocation, setSelectedLocation] = useState(() => {
     const saved = localStorage.getItem('selectedLocation');
     if (saved) {
       try {
@@ -21,23 +19,6 @@ export const LocationProvider = ({ children }) => {
     return null;
   });
 
-  const setSelectedLocation = useCallback(
-    (locationOrFn) => {
-      setSelectedLocationState((prev) => {
-        const next = typeof locationOrFn === 'function' ? locationOrFn(prev) : locationOrFn;
-        if (next) {
-          localStorage.setItem('selectedLocation', JSON.stringify(next));
-        } else {
-          localStorage.removeItem('selectedLocation');
-        }
-        // Invalidate all queries across the app so all data re-fetches for the new location
-        queryClient.invalidateQueries();
-        return next;
-      });
-    },
-    [queryClient]
-  );
-
   useEffect(() => {
     if (apiLocations.length > 0) {
       const saved = localStorage.getItem('selectedLocation');
@@ -48,14 +29,14 @@ export const LocationProvider = ({ children }) => {
             (loc) => loc.city === parsed.city && loc.state === parsed.state
           );
           if (found) {
-            setSelectedLocationState(found);
+            setSelectedLocation(found);
             return;
           }
         } catch (e) {
           // ignore
         }
       }
-      setSelectedLocationState(apiLocations[0]);
+      setSelectedLocation(apiLocations[0]);
     }
   }, [apiLocations]);
 
