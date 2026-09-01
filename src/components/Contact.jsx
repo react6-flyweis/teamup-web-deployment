@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useContact } from '../hooks/useContact';
 import { useLocationContext } from '../context/LocationContext';
-import { getMapEmbedUrl } from '../utils/mapUtils';
 
 const texture = '/assets/stepdown.svg'
 
@@ -86,12 +85,11 @@ const Contact = () => {
     });
   };
 
-  const addressText = selectedLocation
-    ? [selectedLocation.address, selectedLocation.city, selectedLocation.state]
-        .filter(Boolean)
-        .join(', ')
-    : '';
-  const mapSrc = getMapEmbedUrl(selectedLocation?.mapEmbedUrl, addressText);
+  const latitude = selectedLocation?.latitude;
+  const longitude = selectedLocation?.longitude;
+  const mapSrc = (typeof latitude === 'number' && typeof longitude === 'number')
+    ? `https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`
+    : `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d105844.757134375!2d-117.63673551351187!3d33.95015525492194!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80dccd3d052d9a65%3A0xc3317c80f4f9f4d2!2sEastvale%2C%20CA%2C%20USA!5e0!3m2!1sen!2s!4v1715180000000!5m2!1sen!2s`;
 
   return (
     <>
@@ -280,50 +278,42 @@ const Contact = () => {
         </div>
 
         <div className="relative w-full h-80">
-          {mapSrc && (
-            <iframe 
-              title="Team-Up Location"
-              src={mapSrc}
-              width="100%" 
-              height="100%" 
-              style={{ border: 0 }} 
-              allowFullScreen="" 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          )}
+          <iframe 
+            title="Team-Up Location"
+            src={mapSrc}
+            width="100%" 
+            height="100%" 
+            style={{ border: 0 }} 
+            allowFullScreen="" 
+            loading="lazy" 
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
           <div className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white shadow-lg rounded p-6 w-[300px]">
             <h2 style={{ fontFamily: 'Posterama2001W04' }} className="text-lg font-bold mb-2">DO YOU HAVE REQUEST?</h2>
             <p style={{ fontFamily: 'Posterama2001W04' }} className="text-sm font-medium mb-1 text-black">CALL OR VISIT US.</p>
-            {selectedLocation?.phone && (
-              <p className="text-orange-500 font-semibold text-lg mb-4">
-                Call: {selectedLocation.phone}
-              </p>
-            )}
+            <p className="text-orange-500 font-semibold text-lg mb-4">
+              Call: {selectedLocation?.phone || '1800 123 4567'}
+            </p>
 
-            {selectedLocation && (
-              <>
-                <p className="text-sm font-semibold text-black">Address:</p>
-                <p className="text-sm mb-3 text-black">
-                  {[selectedLocation.address, selectedLocation.city, selectedLocation.state]
-                    .filter(Boolean)
-                    .join(', ')}
-                </p>
-              </>
-            )}
+            <p className="text-sm font-semibold text-black">Address:</p>
+            <p className="text-sm mb-3 text-black">
+              {selectedLocation 
+                ? `${selectedLocation.address}, ${selectedLocation.city}, ${selectedLocation.state}`
+                : 'office address: Lorem is simply dummy text'}
+            </p>
 
-            {selectedLocation?.openingHours && selectedLocation.openingHours.length > 0 && (
-              <>
-                <p className="text-sm font-semibold text-black mb-1">Opening Hours:</p>
-                <div className="text-sm text-black max-h-24 overflow-y-auto pr-1">
-                  {selectedLocation.openingHours.map((oh, idx) => (
-                    <div key={idx} className="flex justify-between gap-2 text-xs">
-                      <span className="font-semibold">{oh.day.substring(0, 3)}:</span>
-                      <span>{oh.isClosed ? 'Closed' : `${oh.open} - ${oh.close}`}</span>
-                    </div>
-                  ))}
-                </div>
-              </>
+            <p className="text-sm font-semibold text-black mb-1">Opening Hours:</p>
+            {selectedLocation?.openingHours && selectedLocation.openingHours.length > 0 ? (
+              <div className="text-sm text-black max-h-24 overflow-y-auto pr-1">
+                {selectedLocation.openingHours.map((oh, idx) => (
+                  <div key={idx} className="flex justify-between gap-2 text-xs">
+                    <span className="font-semibold">{oh.day.substring(0, 3)}:</span>
+                    <span>{oh.isClosed ? 'Closed' : `${oh.open} - ${oh.close}`}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-black">Mon – Fri: 9:00 am – 4:00 pm</p>
             )}
           </div>
         </div>
