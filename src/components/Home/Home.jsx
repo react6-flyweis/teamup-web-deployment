@@ -21,7 +21,6 @@ const logo = '/assets/logo.svg';
 const queenbg = '/assets/queenbg.svg';
 const king = '/assets/Stud.svg';
 const queen = '/assets/Doe.svg';
-const enochs2 = '/assets/enochs.svg';
 const bits = '/assets/bits.svg';
 const drinks = '/assets/drink.svg';
 
@@ -34,6 +33,7 @@ const Home = () => {
   const boomBundlesData = contentData?.boomBundles;
   const chooseGameSectionData = contentData?.chooseGameSection;
   const bitesEventsData = contentData?.bitesEvents;
+  const newsletterData = contentData?.newsletter;
 
   const [showModal, setShowModal] = useState(false);
   const [showModal1, setShowModal1] = useState(false);
@@ -163,7 +163,9 @@ const Home = () => {
           nightsOutData={bitesEventsData?.nightsOut}
         />
 
-        <SignupSection enochs2={enochs2} />
+        {newsletterData?.isActive !== false && (
+          <SignupSection newsletterData={newsletterData} />
+        )}
 
         <PromoModal />
       </div>
