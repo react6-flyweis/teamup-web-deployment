@@ -12,8 +12,6 @@ import { getMapEmbedUrl } from '../utils/mapUtils';
 
 const texture = '/assets/stepdown.svg'
 
-const MIN_AGE = 18;
-
 const contactSchema = z.object({
   enquiryType: z.enum(['General', 'Support', 'Sales'], {
     errorMap: () => ({ message: 'Please select an enquiry type' })
@@ -22,17 +20,6 @@ const contactSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(1, 'Phone number is required'),
-  dateOfBirth: z.string().min(1, 'Date of birth is required').refine((val) => {
-    const dob = new Date(val);
-    if (isNaN(dob.getTime())) return false;
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-      age--;
-    }
-    return age >= MIN_AGE;
-  }, { message: `You must be at least ${MIN_AGE} years old` }),
   location: z.string().min(1, 'Location is required'),
   comment: z.string().min(1, 'Comment is required'),
   source: z.string().default('contact-page')
@@ -40,12 +27,6 @@ const contactSchema = z.object({
 
 const Contact = () => {
   const navigate = useNavigate();
-
-  const getMaxDate = () => {
-    const today = new Date();
-    today.setFullYear(today.getFullYear() - MIN_AGE);
-    return today.toISOString().split('T')[0];
-  };
 
   const {
     register,
@@ -61,7 +42,6 @@ const Contact = () => {
       lastName: '',
       email: '',
       phone: '',
-      dateOfBirth: '',
       location: '',
       comment: '',
       source: 'contact-page'
@@ -221,34 +201,19 @@ const Contact = () => {
                 </div>
               </div>
 
-              {/* DOB & Location */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label style={{ fontFamily: 'Noir Semi' }} className="block font-medium mb-1 text-[#292524]">Date of Birth</label>
-                  <input 
-                    type="date" 
-                    max={getMaxDate()}
-                    {...register('dateOfBirth')}
-                    disabled={contactMutation.isPending}
-                    className="w-full border border-gray-300 rounded px-3 py-2" 
-                  />
-                  {errors.dateOfBirth && (
-                    <p className="text-red-500 text-xs mt-1 font-semibold">{errors.dateOfBirth.message}</p>
-                  )}
-                </div>
-                <div>
-                  <label style={{ fontFamily: 'Noir Semi' }} className="block font-medium mb-1 text-[#292524]">Your Location</label>
-                  <input 
-                    type="text" 
-                    placeholder="Enter your location..." 
-                    {...register('location')}
-                    disabled={contactMutation.isPending}
-                    className="w-full border border-gray-300 rounded px-3 py-2" 
-                  />
-                  {errors.location && (
-                    <p className="text-red-500 text-xs mt-1 font-semibold">{errors.location.message}</p>
-                  )}
-                </div>
+              {/* Location */}
+              <div>
+                <label style={{ fontFamily: 'Noir Semi' }} className="block font-medium mb-1 text-[#292524]">Your Location</label>
+                <input 
+                  type="text" 
+                  placeholder="Enter your location..." 
+                  {...register('location')}
+                  disabled={contactMutation.isPending}
+                  className="w-full border border-gray-300 rounded px-3 py-2" 
+                />
+                {errors.location && (
+                  <p className="text-red-500 text-xs mt-1 font-semibold">{errors.location.message}</p>
+                )}
               </div>
 
               {/* Comment */}

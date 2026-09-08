@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLocationContext } from '../../context/LocationContext';
 import { getMapEmbedUrl } from '../../utils/mapUtils';
 
