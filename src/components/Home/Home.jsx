@@ -19,7 +19,7 @@ import SignupSection from './SignupSection';
 
 const logo = '/assets/logo.svg';
 const queenbg = '/assets/queenbg.svg';
-const king = '/assets/Stud.svg';
+const king = '/assets/Stud.png';
 const queen = '/assets/Doe.svg';
 const bits = '/assets/bits.svg';
 const drinks = '/assets/drink.svg';
