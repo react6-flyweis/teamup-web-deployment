@@ -28,11 +28,9 @@ api.interceptors.request.use(
         if (savedLoc) {
           const location = JSON.parse(savedLoc);
           const slug = location.slug || (location.city ? location.city.toLowerCase().replace(/\s+/g, '-') : null);
-          const id = location._id || location.id || slug;
 
           config.params = {
             ...(slug && { locationSlug: slug }),
-            ...(id && { locationId: id }),
             ...config.params,
           };
         }
