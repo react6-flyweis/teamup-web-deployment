@@ -18,13 +18,16 @@ export const resolveImageUrl = (url) => {
  * 
  * @param {string} section - The section name (e.g. 'home')
  */
-export const useSiteContent = (section = 'home') => {
+export const useSiteContent = (section = 'home', options = {}) => {
   return useQuery({
-    queryKey: ['siteContent', section],
+    queryKey: ['siteContent', section, options?.params || {}],
     queryFn: async () => {
-      const response = await api.get(`/api/site-content/${section}`);
+      const response = await api.get(`/api/site-content/${section}`, {
+        params: options?.params,
+      });
       return response.data;
     },
-    enabled: !!section,
+    enabled: options.enabled !== undefined ? options.enabled : !!section,
+    ...options,
   });
 };
