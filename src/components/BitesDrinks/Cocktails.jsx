@@ -1,19 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from '../Navbar';
 import Footer from '../Footer';
 import bg from '../../assets/stepdown2.jpg'
 import cocktailIcon from '../../assets/glass3.svg';
 import { useDrinks } from '../../hooks/useDrinks';
+import { useSiteContent, resolveImageUrl } from '../../hooks/useSiteContent';
 
 const bgImage = '/assets/bg3.svg';
-const team = '/assets/cart2.svg'
-const CheckoutPage = () => {
-  const [accepted, setAccepted] = useState(false);
-  const { data, isLoading, error } = useDrinks();
 
-  const handleCheckbox = () => {
-    setAccepted(!accepted);
-  };
+const CheckoutPage = () => {
+  const { data, isLoading, error } = useDrinks();
+  const { data: siteContentData } = useSiteContent('food-drinks');
+
+  const contentData = siteContentData?.content?.data || siteContentData?.data || siteContentData;
+  const drinksSection = contentData?.drinksSection || contentData?.cocktailsSection || contentData?.drinks;
+  const topBanner = contentData?.topBanner;
+
+  const heroBgImage = drinksSection?.backgroundImage
+    ? resolveImageUrl(drinksSection.backgroundImage)
+    : drinksSection?.imageUrl
+    ? resolveImageUrl(drinksSection.imageUrl)
+    : null;
+
+  const heroTitle = drinksSection?.title;
+  const heroDescription = drinksSection?.description;
 
   const drinksList = data?.drinks || [];
   const cocktails = drinksList
@@ -26,24 +36,33 @@ const CheckoutPage = () => {
 
   return (
     <>
-      <Navbar />
-      {/* <div className="h-[300px] bg-cover bg-center" style={{ backgroundImage: `url(${team})` }}></div> */}
-      <div className="relative h-[300px] bg-cover bg-center" style={{ backgroundImage: `url(${team})` }}>
-       <div className="absolute inset-0 flex items-center justify-center">
-        <h1 style={{ fontFamily: 'Posterama2001W04' }}  className="text-white text-4xl font-bold">COCKTAILS</h1>
-      </div>
+      <Navbar topBanner={topBanner} />
+      {/* Hero Banner */}
+      <div
+        className="relative h-[300px] md:h-[350px] bg-cover bg-center"
+        style={heroBgImage ? { backgroundImage: `url(${heroBgImage})` } : {}}
+      >
+        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center px-4 text-center">
+          {heroTitle && (
+            <h1
+              style={{ fontFamily: 'Posterama2001W04' }}
+              className="text-white text-4xl sm:text-5xl md:text-6xl font-bold uppercase tracking-wider drop-shadow-md"
+            >
+              {heroTitle}
+            </h1>
+          )}
+          {heroDescription && (
+            <p
+              style={{ fontFamily: 'Noir Semi' }}
+              className="text-white/90 text-sm sm:text-base md:text-lg mt-3 max-w-2xl mx-auto drop-shadow"
+            >
+              {heroDescription}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="w-full bg-fixed bg-cover bg-center" style={{ backgroundImage: `url(${bg})` }}>
-        <section className="text-center pt-12 px-4">
-                    <h2 style={{ fontFamily: 'Posterama2001W04' }} className="text-xl md:text-[44px] font-bold text-[#292524] mb-4 uppercase leading-tight tracking-wide">
-                    Your tagline goes here.
-                    </h2>
-
-                    <p style={{ fontFamily: 'Noir Semi' }} className="max-w-4xl mx-auto text-sm md:text-base text-[#292524]">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-                    </p>
-                </section>
         <div className="flex items-center justify-center py-6 sm:py-8 md:py-10 lg:py-12 ps-4 pe-4">
           
           <div
