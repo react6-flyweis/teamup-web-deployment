@@ -38,29 +38,31 @@ const CheckoutPage = () => {
     <>
       <Navbar topBanner={topBanner} />
       {/* Hero Banner */}
-      <div
-        className="relative h-[300px] md:h-[350px] bg-cover bg-center"
-        style={heroBgImage ? { backgroundImage: `url(${heroBgImage})` } : {}}
-      >
-        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center px-4 text-center">
-          {heroTitle && (
-            <h1
-              style={{ fontFamily: 'Posterama2001W04' }}
-              className="text-white text-4xl sm:text-5xl md:text-6xl font-bold uppercase tracking-wider drop-shadow-md"
-            >
-              {heroTitle}
-            </h1>
-          )}
-          {heroDescription && (
-            <p
-              style={{ fontFamily: 'Noir Semi' }}
-              className="text-white/90 text-sm sm:text-base md:text-lg mt-3 max-w-2xl mx-auto drop-shadow"
-            >
-              {heroDescription}
-            </p>
-          )}
+      {(heroBgImage || heroTitle || heroDescription) && (
+        <div
+          className="relative h-[300px] md:h-[350px] bg-cover bg-center"
+          style={heroBgImage ? { backgroundImage: `url(${heroBgImage})` } : {}}
+        >
+          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center px-4 text-center">
+            {heroTitle && (
+              <h1
+                style={{ fontFamily: 'Posterama2001W04' }}
+                className="text-white text-4xl sm:text-5xl md:text-6xl font-bold uppercase tracking-wider drop-shadow-md"
+              >
+                {heroTitle}
+              </h1>
+            )}
+            {heroDescription && (
+              <p
+                style={{ fontFamily: 'Noir Semi' }}
+                className="text-white/90 text-sm sm:text-base md:text-lg mt-3 max-w-2xl mx-auto drop-shadow"
+              >
+                {heroDescription}
+              </p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="w-full bg-fixed bg-cover bg-center" style={{ backgroundImage: `url(${bg})` }}>
         <div className="flex items-center justify-center py-6 sm:py-8 md:py-10 lg:py-12 ps-4 pe-4">
