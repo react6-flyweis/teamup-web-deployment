@@ -4,12 +4,26 @@ import Footer from '../Footer';
 import bg from '../../assets/stepdown2.jpg'
 import cocktailIcon from '../../assets/glass3.svg';
 import { useDrinks } from '../../hooks/useDrinks';
+import { useSiteContent, resolveImageUrl } from '../../hooks/useSiteContent';
 
 const bgImage = '/assets/bg3.svg';
-const banner = '/assets/cart2.svg'
 
 const Drinks = () => {
   const { data, isLoading, error } = useDrinks();
+  const { data: siteContentData } = useSiteContent('food-drinks');
+
+  const contentData = siteContentData?.content?.data || siteContentData?.data || siteContentData;
+  const drinksSection = contentData?.drinksSection || contentData?.cocktailsSection || contentData?.drinks;
+  const topBanner = contentData?.topBanner;
+
+  const heroBgImage = drinksSection?.backgroundImage
+    ? resolveImageUrl(drinksSection.backgroundImage)
+    : drinksSection?.imageUrl
+    ? resolveImageUrl(drinksSection.imageUrl)
+    : null;
+
+  const heroTitle = drinksSection?.title;
+  const heroDescription = drinksSection?.description;
 
   const drinksList = data?.drinks || [];
 
@@ -31,14 +45,31 @@ const Drinks = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
+      <Navbar topBanner={topBanner} />
       
       {/* Hero Banner */}
-      <div className="relative h-[40vh] bg-cover bg-center" style={{ backgroundImage: `url(${banner})` }}>
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-          <h1 className="font-posterama text-5xl md:text-8xl text-white font-black tracking-tighter uppercase">DRINKS & COCKTAILS</h1>
+      {(heroBgImage || heroTitle || heroDescription) && (
+        <div
+          className="relative h-[40vh] bg-cover bg-center"
+          style={heroBgImage ? { backgroundImage: `url(${heroBgImage})` } : {}}
+        >
+          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center px-4 text-center">
+            {heroTitle && (
+              <h1 className="font-posterama text-5xl md:text-8xl text-white font-black tracking-tighter uppercase drop-shadow-md">
+                {heroTitle}
+              </h1>
+            )}
+            {heroDescription && (
+              <p
+                style={{ fontFamily: 'Noir Semi' }}
+                className="text-white/90 text-sm sm:text-base md:text-lg mt-3 max-w-2xl mx-auto drop-shadow"
+              >
+                {heroDescription}
+              </p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="w-full bg-fixed bg-cover bg-center py-12" style={{ backgroundImage: `url(${bg})` }}>
         <div className="max-w-[1300px] mx-auto px-4 flex flex-col gap-12">
