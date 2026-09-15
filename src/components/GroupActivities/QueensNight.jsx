@@ -80,25 +80,27 @@ const QueensNight = () => {
 
   return (
     <>
-      <div className="relative md:h-screen w-full overflow-hidden">
+      <div className="relative ">
         <Navbar />
 
+
+        {/* Content */}
+        <div className="relative z-20 flex flex-col items-center justify-center text-center px-4 py-20 text-white">
         <div
           style={{ backgroundImage: `url(${pageHeroImage})` }}
           className="absolute inset-0 w-full h-full bg-cover bg-center z-0"
         ></div>
-
-        {/* Content */}
-        <div className="relative z-20 flex flex-col items-center justify-center text-center px-4 py-20 text-white">
           {/* Queen Image */}
+          {/* 
           <img
-            src={queenDefault}
-            alt="Queen"
-            className="max-w-[440px] w-full h-auto z-10"
+          src={queenDefault}
+          alt="Queen"
+          className="max-w-[440px] w-full h-auto z-10"
           />
+          */}
 
           {/* Text, Button and Arrow */}
-          <div className="relative z-20 mt-8 flex flex-col items-center">
+          <div className="relative z-20 mt-8 flex flex-col items-center justify-center">
             <h1 className="text-white text-3xl sm:text-[64px] font-bold mb-4 uppercase tracking-tighter">
               {pageHeadline}
             </h1>
