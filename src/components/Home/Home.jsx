@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useBooking } from '../../hooks/useBooking';
-import { useSiteContent } from '../../hooks/useSiteContent';
+import { useSiteContent, resolveImageUrl } from '../../hooks/useSiteContent';
 import vid from '../../assets/videos/vid.mp4';
 import bg from '../../assets/stepdown2.jpg';
 import Footer from '../Footer';
@@ -34,6 +34,8 @@ const Home = () => {
   const chooseGameSectionData = contentData?.chooseGameSection;
   const bitesEventsData = contentData?.bitesEvents;
   const newsletterData = contentData?.newsletter;
+  const mainBg = contentData?.mainBg || contentData?.hero?.mainBg;
+  const bgImage = mainBg ? resolveImageUrl(mainBg) : bg;
 
   const [showModal, setShowModal] = useState(false);
   const [showModal1, setShowModal1] = useState(false);
@@ -116,7 +118,7 @@ const Home = () => {
 
       <div
         className="w-full bg-fixed bg-cover bg-center pt-10"
-        style={{ backgroundImage: `url(${bg})` }}
+        style={{ backgroundImage: `url(${bgImage})` }}
       >
         {partyData.length > 0 && (
           <PartyCarousel

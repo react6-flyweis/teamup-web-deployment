@@ -7,7 +7,7 @@ import { FiMail, FiCheckCircle, FiAlertCircle, FiArrowLeft } from 'react-icons/f
 import bgImage from '../assets/bg.svg';
 
 const FEATURE_FLAGS = {
-  showTimer: true,
+  showTimer: false,
   showWaitlist: false
 };
 
@@ -116,15 +116,15 @@ const ComingSoon = () => {
             transition={{ duration: 0.6 }}
           >
             <span className="inline-block bg-[#E1017D] text-white px-6 py-1.5 font-noir font-bold text-xs sm:text-sm uppercase tracking-widest mb-6 transform -rotate-1 shadow-[0_0_15px_rgba(225,1,125,0.4)]">
-              Next-Level Gaming Coming Soon
+              Team UP Experiences
             </span>
 
             <h1 className="font-posterama text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white mb-6 leading-none">
-              WE ARE <span className="text-[#00AACB]">GEARING UP</span>
+              VIBE — <span className="text-[#00AACB]">COMING SOON</span>
             </h1>
 
-            <p className="font-noir-pro text-sm sm:text-lg text-gray-300 max-w-xl mx-auto mb-12">
-              Our advanced booking system is undergoing maintenance as we prepare to launch epic tournaments, cocktail bookings, and ultimate group experiences. Get ready to game!
+            <p className="font-noir-pro text-base sm:text-xl text-gray-300 max-w-xl mx-auto mb-10 leading-relaxed">
+              Next-level party vibes, epic games, and unforgettable nights are on the way. We’re gearing up for something big!
             </p>
           </motion.div>
 
