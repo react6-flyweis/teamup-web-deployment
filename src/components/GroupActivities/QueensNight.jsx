@@ -11,7 +11,6 @@ import clock2 from '../../assets/clock2.svg';
 import min from '../../assets/min.svg';
 import dollar from '../../assets/dollar.svg';
 
-const queenDefault = '/assets/Doe.svg';
 const queenbgDefault = '/assets/queenbg.svg';
 const texture = '/assets/texture.svg';
 
@@ -27,7 +26,7 @@ const iconMap = {
 const QueensNight = () => {
   const { slug } = useParams();
   const handleBooking = useBooking();
-  const { data: rawData, isLoading, error } = useQueensNight(slug || 'queens-night');
+  const { data: rawData, isLoading } = useQueensNight(slug || 'queens-night');
 
   if (isLoading) {
     return (
@@ -43,11 +42,11 @@ const QueensNight = () => {
   const pageHeroImage = data.pageHeroImage || queenbgDefault;
   const heroBookNowLink = data.heroBookNowLink;
   
-  const sectionHeadline = data.sectionHeadline || 'CELEBRATE HER LAST FLING BEFORE THE RING WITH A BOOM';
-  const sectionDescription = data.sectionDescription || 'Chat to our expert party planners today to plan a stag party full of fizz and fun. What does the price include?';
+  const sectionHeadline = data.sectionHeadline;
+  const sectionDescription = data.sectionDescription;
   const checklistItems = data.checklistItems || [];
 
-  const howToBookHeadline = data.howToBookHeadline || "HERE'S HOW TO BOOK";
+  const howToBookHeadline = data.howToBookHeadline;
   const howToBookBody = data.howToBookBody;
   const howToBookLink = data.howToBookLink;
   const howToBookEmail = data.howToBookEmail;
@@ -72,35 +71,20 @@ const QueensNight = () => {
     }),
   };
 
-  const defaultStats = [
-    { icon: min, heading: 'AGE', value: '18+' },
-    { icon: dollar, heading: 'FROM', value: '$30', sub: 'PER PERSON\nMINIMUM 6 PEOPLE PER BOOKING' },
-    { icon: clock2, heading: 'FOR', value: '2–3', sub: 'HOURS' }
-  ];
-
   return (
     <>
-      <div className="relative ">
-        <Navbar />
-
-
-        {/* Content */}
-        <div className="relative z-20 flex flex-col items-center justify-center text-center px-4 py-20 text-white">
+      {/* Hero Section - fills remaining viewport height */}
+      <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div
           style={{ backgroundImage: `url(${pageHeroImage})` }}
           className="absolute inset-0 w-full h-full bg-cover bg-center z-0"
         ></div>
-          {/* Queen Image */}
-          {/* 
-          <img
-          src={queenDefault}
-          alt="Queen"
-          className="max-w-[440px] w-full h-auto z-10"
-          />
-          */}
 
-          {/* Text, Button and Arrow */}
-          <div className="relative z-20 mt-8 flex flex-col items-center justify-center">
+        <Navbar />
+
+        {/* Hero Content grows to fill remaining space */}
+        <div className="relative z-20 flex-1 flex flex-col items-center justify-center text-center px-4 py-12 text-white">
+          <div className="relative z-20 flex flex-col items-center justify-center">
             <h1 className="text-white text-3xl sm:text-[64px] font-bold mb-4 uppercase tracking-tighter">
               {pageHeadline}
             </h1>
@@ -142,17 +126,21 @@ const QueensNight = () => {
         className="w-full bg-fixed bg-cover bg-center"
         style={{ backgroundImage: `url(${texture})` }}
       >
-        <section className="text-center pt-12 px-4">
-          <h2 className="text-xl md:text-[36px] font-bold text-[#292524] mb-4 uppercase leading-tight tracking-wide">
-            {sectionHeadline}
-          </h2>
+        {(sectionHeadline || sectionDescription) && (
+          <section className="text-center pt-12 px-4">
+            {sectionHeadline && (
+              <h2 className="text-xl md:text-[36px] font-bold text-[#292524] mb-4 uppercase leading-tight tracking-wide">
+                {sectionHeadline}
+              </h2>
+            )}
 
-          {sectionDescription && (
-            <p className="max-w-4xl mx-auto text-sm md:text-base text-[#292524]">
-              {sectionDescription}
-            </p>
-          )}
-        </section>
+            {sectionDescription && (
+              <p className="max-w-4xl mx-auto text-sm md:text-base text-[#292524]">
+                {sectionDescription}
+              </p>
+            )}
+          </section>
+        )}
 
         {checklistItems.length > 0 && (
           <div className="p-4 sm:p-6 space-y-6 max-w-[800px] mx-auto mt-8">
@@ -209,89 +197,70 @@ const QueensNight = () => {
           </section>
         )}
 
-        <section className="text-center pt-12 px-4">
-          <h2 className="text-xl md:text-[36px] font-bold text-[#292524] mb-4 uppercase leading-tight tracking-wide">
-            {howToBookHeadline}
-          </h2>
-
-          <p className="max-w-4xl mx-auto text-sm md:text-base text-[#292524]">
-            {howToBookBody || "To book this package, either click here, email us on USA@teamup.com or give us a call on 0207 286 0404. Don’t worry, it’s quick and easy. We promise not to keep you on the phone for hours!"}
-            {howToBookLink && (
-              <span> <Link to={howToBookLink} className="underline cursor-pointer">click here</Link></span>
+        {(howToBookHeadline || howToBookBody || howToBookLink || howToBookEmail || howToBookPhone || statsBlocks.length > 0) && (
+          <section className="text-center pt-12 px-4">
+            {howToBookHeadline && (
+              <h2 className="text-xl md:text-[36px] font-bold text-[#292524] mb-4 uppercase leading-tight tracking-wide">
+                {howToBookHeadline}
+              </h2>
             )}
-            {howToBookEmail && (
-              <span>, email us on <a href={`mailto:${howToBookEmail}`} className="underline font-bold">{howToBookEmail}</a></span>
-            )}
-            {howToBookPhone && (
-              <span> or give us a call on <a href={`tel:${howToBookPhone.replace(/\s+/g, '')}`} className="underline font-bold">{howToBookPhone}</a></span>
-            )}
-          </p>
 
-          <div className="flex flex-col md:flex-row justify-center gap-4 p-4 mt-4">
-            {statsBlocks.length > 0 ? (
-              statsBlocks.map((box, index) => {
-                const iconSrc = iconMap[box.iconType] || (box.iconType && box.iconType.startsWith('http') ? box.iconType : min);
-                const headingText = (box.topText || (box.iconType === 'age' ? 'AGE' : box.iconType === 'price' ? 'FROM' : '')).trim() || 'INFO';
-                const mainVal = box.mainText || box.value || '';
-                const subVal = box.subText || box.sub || '';
+            {(howToBookBody || howToBookLink || howToBookEmail || howToBookPhone) && (
+              <p className="max-w-4xl mx-auto text-sm md:text-base text-[#292524]">
+                {howToBookBody}
+                {howToBookLink && (
+                  <span> <Link to={howToBookLink} className="underline cursor-pointer">click here</Link></span>
+                )}
+                {howToBookEmail && (
+                  <span>, email us on <a href={`mailto:${howToBookEmail}`} className="underline font-bold">{howToBookEmail}</a></span>
+                )}
+                {howToBookPhone && (
+                  <span> or give us a call on <a href={`tel:${howToBookPhone.replace(/\s+/g, '')}`} className="underline font-bold">{howToBookPhone}</a></span>
+                )}
+              </p>
+            )}
 
-                return (
-                  <motion.div
-                    key={box.id || index}
-                    className="flex flex-col bg-black text-[#00AACB] w-full min-[820px]:w-[280px] text-center p-6"
-                    custom={index}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    variants={columnVariants}
-                  >
-                    <div className="flex flex-col items-center space-y-4">
-                      <img src={iconSrc} alt={headingText} className="w-auto h-[80px]" />
-                      <div className="space-y-2">
-                        <div className="text-sm min-[820px]:text-base uppercase text-white">{headingText}</div>
-                        <div className="text-2xl min-[820px]:text-4xl font-extrabold">{mainVal}</div>
-                        {subVal && (
-                          <div className="text-xs min-[820px]:text-sm text-white mt-1 whitespace-pre-line">
-                            {subVal}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })
-            ) : (
-              defaultStats.map((box, index) => (
-                <motion.div
-                  key={index}
-                  className="flex flex-col bg-black text-[#00AACB] w-full min-[820px]:w-[280px] text-center p-6"
-                  custom={index}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={columnVariants}
-                >
-                  <div className="flex flex-col items-center space-y-4">
-                    <img src={box.icon} alt={box.heading} className="w-auto h-[80px]" />
-                    <div className="space-y-2">
-                      <div className="text-sm min-[820px]:text-base uppercase text-white">{box.heading}</div>
-                      <div className="text-2xl min-[820px]:text-4xl font-extrabold">{box.value}</div>
-                      {box.sub && (
-                        <div className="text-xs min-[820px]:text-sm text-white mt-1 whitespace-pre-line">
-                          {box.sub}
+            {statsBlocks.length > 0 && (
+              <div className="flex flex-col md:flex-row justify-center gap-4 p-4 mt-4">
+                {statsBlocks.map((box, index) => {
+                  const iconSrc = iconMap[box.iconType] || (box.iconType && box.iconType.startsWith('http') ? box.iconType : min);
+                  const headingText = (box.topText || (box.iconType === 'age' ? 'AGE' : box.iconType === 'price' ? 'FROM' : '')).trim() || 'INFO';
+                  const mainVal = box.mainText || box.value || '';
+                  const subVal = box.subText || box.sub || '';
+
+                  return (
+                    <motion.div
+                      key={box.id || index}
+                      className="flex flex-col bg-black text-[#00AACB] w-full min-[820px]:w-[280px] text-center p-6"
+                      custom={index}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                      variants={columnVariants}
+                    >
+                      <div className="flex flex-col items-center space-y-4">
+                        <img src={iconSrc} alt={headingText} className="w-auto h-[80px]" />
+                        <div className="space-y-2">
+                          <div className="text-sm min-[820px]:text-base uppercase text-white">{headingText}</div>
+                          <div className="text-2xl min-[820px]:text-4xl font-extrabold">{mainVal}</div>
+                          {subVal && (
+                            <div className="text-xs min-[820px]:text-sm text-white mt-1 whitespace-pre-line">
+                              {subVal}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ))
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             )}
-          </div>
-        </section>
+          </section>
+        )}
 
-        <h1 className="text-center text-2xl md:text-[36px] text-[#292524] mt-12 font-bold mb-4 uppercase">
+        <h2 className="text-center text-2xl md:text-[36px] text-[#292524] mt-12 font-bold mb-4 uppercase">
           {chooseGamesHeading || 'OTHER GAMES'}
-        </h1>
+        </h2>
         <OtherGames filterGameIds={chooseGameIds.length > 0 ? chooseGameIds : undefined} showHeading={false} />
       </div>
       <Footer />
