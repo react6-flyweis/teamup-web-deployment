@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import Navbar from './Navbar'
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiChevronDown } from 'react-icons/fi';
 import Footer from './Footer'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +9,7 @@ import { z } from 'zod';
 import { useContact } from '../hooks/useContact';
 import { useLocationContext } from '../context/LocationContext';
 import { getMapEmbedUrl } from '../utils/mapUtils';
+import { useSiteContent, resolveImageUrl } from '../hooks/useSiteContent';
 
 const texture = '/assets/stepdown.svg'
 
@@ -33,6 +34,7 @@ const Contact = () => {
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors }
   } = useForm({
     resolver: zodResolver(contactSchema),
@@ -49,6 +51,7 @@ const Contact = () => {
   });
 
   const { selectedLocation } = useLocationContext();
+  const enquiryType = watch('enquiryType');
 
   useEffect(() => {
     if (selectedLocation) {
@@ -73,12 +76,16 @@ const Contact = () => {
     : '';
   const mapSrc = getMapEmbedUrl(selectedLocation?.mapEmbedUrl, addressText);
 
+  const { data: homeContentData } = useSiteContent('home');
+  const homeData = homeContentData?.content?.data || homeContentData?.data;
+  const mainBg = homeData?.mainBg ? resolveImageUrl(homeData.mainBg) : texture;
+
   return (
     <>
-      <Navbar />
+      <Navbar topBanner={homeData?.topBanner} />
 
       <div className="w-full bg-fixed bg-cover bg-center"
-        style={{ backgroundImage: `url(${texture})` }}>
+        style={{ backgroundImage: `url(${mainBg})` }}>
 
         <section className="relative text-center pt-12 px-4 bg-cover bg-center">
           {/* Back Arrow */}
@@ -126,16 +133,23 @@ const Contact = () => {
               {/* Enquiry Type */}
               <div>
                 <label style={{ fontFamily: 'Noir Semi' }} className="block font-medium mb-1 text-[#292524]">Enquiry Type</label>
-                <select 
-                  {...register('enquiryType')}
-                  disabled={contactMutation.isPending}
-                  className="w-full border border-gray-300 rounded px-3 py-2 bg-white text-black"
-                >
-                  <option value="">Select your enquiry type...</option>
-                  <option value="General">General</option>
-                  <option value="Support">Support</option>
-                  <option value="Sales">Sales</option>
-                </select>
+                <div className="relative">
+                  <select 
+                    {...register('enquiryType')}
+                    disabled={contactMutation.isPending}
+                    className={`w-full h-[42px] border border-gray-300 rounded px-3 py-2 bg-white appearance-none cursor-pointer pr-10 ${
+                      !enquiryType ? 'text-gray-400' : 'text-[#292524]'
+                    }`}
+                  >
+                    <option value="" className="text-gray-400">Select your enquiry type...</option>
+                    <option value="General" className="text-[#292524]">General</option>
+                    <option value="Support" className="text-[#292524]">Support</option>
+                    <option value="Sales" className="text-[#292524]">Sales</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
+                    <FiChevronDown className="w-4 h-4" />
+                  </div>
+                </div>
                 {errors.enquiryType && (
                   <p className="text-red-500 text-xs mt-1 font-semibold">{errors.enquiryType.message}</p>
                 )}
@@ -150,7 +164,7 @@ const Contact = () => {
                     placeholder="Enter your first name..." 
                     {...register('firstName')}
                     disabled={contactMutation.isPending}
-                    className="w-full border border-gray-300 rounded px-3 py-2" 
+                    className="w-full h-[42px] border border-gray-300 rounded px-3 py-2" 
                   />
                   {errors.firstName && (
                     <p className="text-red-500 text-xs mt-1 font-semibold">{errors.firstName.message}</p>
@@ -163,7 +177,7 @@ const Contact = () => {
                     placeholder="Enter your last name..." 
                     {...register('lastName')}
                     disabled={contactMutation.isPending}
-                    className="w-full border border-gray-300 rounded px-3 py-2" 
+                    className="w-full h-[42px] border border-gray-300 rounded px-3 py-2" 
                   />
                   {errors.lastName && (
                     <p className="text-red-500 text-xs mt-1 font-semibold">{errors.lastName.message}</p>
@@ -180,7 +194,7 @@ const Contact = () => {
                     placeholder="Enter your email id..." 
                     {...register('email')}
                     disabled={contactMutation.isPending}
-                    className="w-full border border-gray-300 rounded px-3 py-2" 
+                    className="w-full h-[42px] border border-gray-300 rounded px-3 py-2" 
                   />
                   {errors.email && (
                     <p className="text-red-500 text-xs mt-1 font-semibold">{errors.email.message}</p>
@@ -193,7 +207,7 @@ const Contact = () => {
                     placeholder="Enter your phone number..." 
                     {...register('phone')}
                     disabled={contactMutation.isPending}
-                    className="w-full border border-gray-300 rounded px-3 py-2" 
+                    className="w-full h-[42px] border border-gray-300 rounded px-3 py-2" 
                   />
                   {errors.phone && (
                     <p className="text-red-500 text-xs mt-1 font-semibold">{errors.phone.message}</p>
@@ -209,7 +223,7 @@ const Contact = () => {
                   placeholder="Enter your location..." 
                   {...register('location')}
                   disabled={contactMutation.isPending}
-                  className="w-full border border-gray-300 rounded px-3 py-2" 
+                  className="w-full h-[42px] border border-gray-300 rounded px-3 py-2" 
                 />
                 {errors.location && (
                   <p className="text-red-500 text-xs mt-1 font-semibold">{errors.location.message}</p>
