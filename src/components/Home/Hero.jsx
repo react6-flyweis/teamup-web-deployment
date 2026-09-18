@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { resolveImageUrl } from '../../hooks/useSiteContent';
 import { handleNavigation } from '../../utils/navigation';
 
-const Hero = ({ heroData, topBanner }) => {
+const Hero = ({ heroData, topBanner, vid, handleClick }) => {
   // const { selectedLocation } = useLocationContext();
   const navigate = useNavigate();
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
   const title = heroData?.title;
   // const locationText = selectedLocation?.city && selectedLocation?.state 
@@ -21,6 +24,8 @@ const Hero = ({ heroData, topBanner }) => {
   const handlePrimaryClick = () => {
     if (primaryLink) {
       handleNavigation(primaryLink, navigate);
+    } else if (handleClick) {
+      handleClick();
     }
   };
 
@@ -30,37 +35,47 @@ const Hero = ({ heroData, topBanner }) => {
     }
   };
 
-  const mediaUrl = heroData?.backgroundMediaUrl ? resolveImageUrl(heroData.backgroundMediaUrl) : null;
-  const isVideo = mediaUrl && (mediaUrl.endsWith('.mp4') || mediaUrl.endsWith('.webm'));
+  const rawVideoUrl = heroData?.videoUrl;
+  const rawImageUrl = heroData?.mediaUrl || heroData?.backgroundMediaUrl || heroData?.imageUrl;
+
+  const videoUrl = rawVideoUrl
+    ? resolveImageUrl(rawVideoUrl)
+    : (!rawImageUrl && vid ? vid : null);
+  const imageUrl = rawImageUrl ? resolveImageUrl(rawImageUrl) : null;
 
   return (
     <div className="relative w-full overflow-hidden min-h-fit md:h-screen">
       <Navbar topBanner={topBanner} />
 
-      {/* Background Media */}
-      {mediaUrl && (
-        isVideo ? (
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute top-10 left-0 w-full h-full object-cover z-0"
-          >
-            <source src={mediaUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <img
-            src={mediaUrl}
-            alt="Hero Background"
-            className="absolute top-10 left-0 w-full h-full object-cover z-0"
-          />
-        )
+      {/* Background Media - Image acts as immediate background & video fallback */}
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt={title || "Hero Background"}
+          className="absolute top-10 left-0 w-full h-full object-cover z-0"
+        />
+      )}
+
+      {videoUrl && !videoError && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster={imageUrl || undefined}
+          onLoadedData={() => setIsVideoLoaded(true)}
+          onError={() => setVideoError(true)}
+          className={`absolute top-10 left-0 w-full h-full object-cover z-0 transition-opacity duration-700 ${
+            isVideoLoaded || !imageUrl ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <source src={videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       )}
 
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+      <div className="absolute inset-0 bg-black bg-opacity-50 z-10 pointer-events-none"></div>
 
       {/* Content */}
       <div className="relative z-20 flex flex-col items-center justify-center px-2 md:px-8 text-center text-white py-12 md:py-0 h-full md:mt-8">
