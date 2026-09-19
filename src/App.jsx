@@ -18,6 +18,7 @@ const QueensNight = lazy(() => import('./components/GroupActivities/QueensNight'
 const KingsNight = lazy(() => import('./components/GroupActivities/KingsNight'));
 // const Baseball = lazy(() => import('./components/Choosegame/Baseball'));
 const FoodCombos = lazy(() => import('./components/GroupActivities/FoodCombos'));
+const FoodMenu = lazy(() => import('./components/GroupActivities/FoodMenu'));
 // const Dance = lazy(() => import('./components/Choosegame/Dance'));
 // const Snooker = lazy(() => import('./components/Choosegame/Snooker'));
 const BookGames = lazy(() => import('./components/BookGames/BookGames'));
@@ -32,6 +33,7 @@ const Archerycart = lazy(() => import('./components/Cart/Archerycart'));
 const Dartscart = lazy(() => import('./components/Cart/Dartscart'));
 const Golfsimulatorcart = lazy(() => import('./components/Cart/Golfsimulatorcart'));
 const Drinks = lazy(() => import('./components/BitesDrinks/Drinks'));
+const DrinksMenu = lazy(() => import('./components/BitesDrinks/DrinksMenu'));
 const Corporatebooking = lazy(() => import('./components/Corporatebooking/Corporatebooking'));
 const Cookies = lazy(() => import('./components/Cookies'));
 const Terms = lazy(() => import('./components/Terms'));
@@ -95,10 +97,12 @@ const App = () => {
         <Route path="/karaokecart" element={<Karaokecart />} />
         <Route path="/brunchcart" element={<Brunchcart />} /> */}
         {/* <Route path="/birthday" element={<BirthdayParties />} /> */}
-        <Route path="/street-food" element={<FoodCombos />} />
+        <Route path="/street-food" element={<FoodMenu />} />
+        <Route path="/street-food-combos" element={<FoodCombos />} />
         <Route path="/bookgames" element={<BookGames />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/drinks-and-cocktails" element={<Drinks />} />
+        <Route path="/drinks-and-cocktails" element={<DrinksMenu />} />
+        <Route path="/drinks-and-cocktails-details" element={<Drinks />} />
         <Route path="/corporates" element={<Corporatebooking />} />
         <Route path="/cookies" element={<Cookies />} />
         <Route path="/terms" element={<Terms />} />

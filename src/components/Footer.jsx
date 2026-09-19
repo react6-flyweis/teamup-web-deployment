@@ -24,6 +24,7 @@ const Footer = () => {
     const socialMediaLinks = footerData?.socialMediaLinks;
 
     const officeAddress = companyInfo?.officeAddress || '';
+    const addressLabel = companyInfo?.addressLabel || footerData?.addressLabel || 'Address';
     const phoneNumber = companyInfo?.phoneNumber || '';
     const copyrightText = companyInfo?.copyrightText || '';
 
@@ -68,7 +69,7 @@ const Footer = () => {
                         {officeAddress && (
                             <div>
                                 <p className="font-noir font-bold text-white text-sm uppercase tracking-widest opacity-60 mb-1">
-                                    Office Address
+                                    {addressLabel}
                                 </p>
                                 <p className="font-noir font-bold text-[#ABABAB] text-sm md:text-base leading-relaxed">
                                     {officeAddress}

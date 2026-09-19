@@ -8,7 +8,163 @@ import { useSiteContent, resolveImageUrl } from '../../hooks/useSiteContent';
 import { useBooking } from '../../hooks/useBooking';
 import { handleNavigation } from '../../utils/navigation';
 
+import gameIcon from '../../assets/corporate/Game-play-40x40px.png';
+import cocktailIcon from '../../assets/corporate/Cocktails_40x40px.png';
+import bevvyIcon from '../../assets/corporate/Bevvys_40x40px.png';
+import burgerIcon from '../../assets/corporate/Burger_40x40px.png';
+import shotsIcon from '../../assets/corporate/Shots_40x40px.png';
+import moneyIcon from '../../assets/corporate/Money_40x40px.png';
+
 const texture = '/assets/texture.svg';
+
+const formatPrice = (price) => {
+  if (!price && price !== 0) return 'N/A';
+  const str = String(price).trim();
+  if (/^\d+(\.\d+)?$/.test(str)) {
+    return `£${str} PP`;
+  }
+  return str;
+};
+
+const DEFAULT_CORPORATE_PACKAGES = [
+  {
+    title: "JINGLE & MINGLE",
+    games: "2 HOURS OF GAMES",
+    welcomeBevvy: "PROSECCO, WINE OR BOTTLED BEER/CIDER/0% ON ARRIVAL",
+    bevvies: "2 HOUSE BEVVIES",
+    bevviesUpgrade: "(COCKTAIL UPGRADE AVAILABLE)",
+    scran: "N/A",
+    somethingFun: "N/A",
+    price: "35",
+  },
+  {
+    title: "MISTLETOE MADNESS",
+    games: "2 HOURS OF GAMES",
+    welcomeBevvy: "PROSECCO, WINE OR BOTTLED BEER/CIDER/0% ON ARRIVAL",
+    bevvies: "3 HOUSE BEVVIES",
+    bevviesUpgrade: "(COCKTAIL UPGRADE AVAILABLE)",
+    scran: "BOOM BITES - STREET FOOD BUFFET",
+    somethingFun: "FESTIVE GROUP SHOT",
+    funSubtitle: "(SWITCH TO JOE & SEPHS\nPOPCORN TO TAKE HOME)",
+    price: "55",
+  },
+  {
+    title: "THE CHRISTMAS CRACKER",
+    games: "3 HOURS OF GAMES",
+    welcomeBevvy: "PROSECCO, WINE OR BOTTLED BEER/CIDER/0% ON ARRIVAL",
+    bevvies: "4 HOUSE BEVVIES",
+    bevviesUpgrade: "(COCKTAIL UPGRADE AVAILABLE)",
+    scran: "BOOM BITES - STREET FOOD BUFFET",
+    somethingFun: "FESTIVE GROUP SHOT",
+    funSubtitle: "(SWITCH TO JOE & SEPHS\nPOPCORN TO TAKE HOME)",
+    price: "70",
+  },
+  {
+    title: "BUILD YOUR OWN",
+    games: "CHOOSE YOUR GAME TIME",
+    welcomeBevvy: "CHOOSE YOUR WELCOME DRINKS",
+    bevvies: "CHOOSE YOUR DRINKS PACKAGE",
+    scran: "CHOOSE YOUR FOOD PACKAGE",
+    somethingFun: "ADD OPTIONAL EXTRAS",
+    price: "BUILT AROUND YOUR BUDGET",
+  },
+];
+
+const TABLE_ROWS = [
+  {
+    id: 'games',
+    label: 'GAMES',
+    icon: gameIcon,
+    render: (pkg) => (
+      <span className="font-extrabold text-xs sm:text-sm md:text-[14px] text-black uppercase tracking-tight">
+        {pkg.games || pkg.gameTime || 'N/A'}
+      </span>
+    ),
+  },
+  {
+    id: 'welcomeBevvy',
+    label: 'WELCOME BEVVY',
+    icon: cocktailIcon,
+    render: (pkg) => (
+      <span className="font-extrabold text-[11px] sm:text-xs md:text-[13px] text-black uppercase tracking-tight leading-snug px-1 block">
+        {pkg.welcomeBevvy || 'N/A'}
+      </span>
+    ),
+  },
+  {
+    id: 'bevvies',
+    label: 'BEVVIES',
+    icon: bevvyIcon,
+    render: (pkg) => {
+      const val = pkg.bevvies || 'N/A';
+      const upgrade = pkg.bevviesUpgrade || (
+        val.toUpperCase().includes('HOUSE BEVVIES') && !val.toUpperCase().includes('COCKTAIL UPGRADE')
+          ? '(COCKTAIL UPGRADE AVAILABLE)'
+          : null
+      );
+      return (
+        <div className="flex flex-col items-center justify-center space-y-0.5 px-1">
+          <span className="font-extrabold text-xs sm:text-sm md:text-[14px] text-black uppercase tracking-tight leading-snug">
+            {val}
+          </span>
+          {upgrade && (
+            <span className="font-bold text-[10px] sm:text-[11px] text-neutral-500 uppercase tracking-tight leading-tight">
+              {upgrade}
+            </span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    id: 'scran',
+    label: 'SCRAN',
+    icon: burgerIcon,
+    render: (pkg) => (
+      <span className="font-extrabold text-xs sm:text-sm md:text-[14px] text-black uppercase tracking-tight leading-snug px-1 block">
+        {pkg.scran || 'N/A'}
+      </span>
+    ),
+  },
+  {
+    id: 'somethingFun',
+    label: 'SOMETHING FUN',
+    icon: shotsIcon,
+    render: (pkg) => {
+      const val = pkg.somethingFun || pkg.fun || 'N/A';
+      if (val === 'N/A') {
+        return <span className="font-extrabold text-xs sm:text-sm md:text-[14px] text-black">N/A</span>;
+      }
+      const sub = pkg.funSubtitle || (
+        val.toUpperCase().includes('FESTIVE GROUP SHOT') && !val.toUpperCase().includes('JOE & SEPHS')
+          ? '(SWITCH TO JOE & SEPHS\nPOPCORN TO TAKE HOME)'
+          : null
+      );
+      return (
+        <div className="flex flex-col items-center justify-center space-y-0.5 px-1">
+          <span className="font-extrabold text-xs sm:text-sm md:text-[14px] text-black uppercase tracking-tight leading-snug">
+            {val}
+          </span>
+          {sub && (
+            <span className="font-bold text-[10px] sm:text-[11px] text-neutral-500 uppercase tracking-tight leading-tight whitespace-pre-line">
+              {sub}
+            </span>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    id: 'price',
+    label: 'PRICE £ PP',
+    icon: moneyIcon,
+    render: (pkg) => (
+      <span className="font-black text-xs sm:text-sm md:text-[15px] text-black uppercase tracking-tight">
+        {formatPrice(pkg.price)}
+      </span>
+    ),
+  },
+];
 
 const Corporatebooking = () => {
   const navigate = useNavigate();
@@ -32,7 +188,11 @@ const Corporatebooking = () => {
   const heroHeading = corporates?.heroHeading || 'CORPORATE BOOKING';
   const heroSubtitle = corporates?.heroTitle;
 
-  const packagesList = Array.isArray(corporates?.packages) ? corporates.packages : [];
+  const hasNewPackageFormat = Array.isArray(corporates?.packages) &&
+    corporates.packages.length > 0 &&
+    corporates.packages.some(p => p.games || p.welcomeBevvy || p.scran || p.bevvies);
+
+  const packagesList = hasNewPackageFormat ? corporates.packages : DEFAULT_CORPORATE_PACKAGES;
   const packagesTitle = corporates?.packagesTitle;
   const packagesDescription = corporates?.packagesDescription;
   const budgetText = corporates?.budgetText;
@@ -140,86 +300,86 @@ const Corporatebooking = () => {
           </section>
         )}
 
-        {/* Pricing Boxes */}
+        {/* Package Comparison Table */}
         {packagesList.length > 0 && (
-          <div className="flex flex-col md:flex-row justify-center items-stretch gap-4 p-4 mt-12 max-w-6xl mx-auto">
-            {packagesList.map((box, index) => {
-              const iconSrc = resolveImageUrl(box.iconUrl);
-              const heading = box.title;
-              const price = box.price;
-              const details = Array.isArray(box.details) ? box.details : (box.details ? [box.details] : []);
-              const buttonText = box.buttonText || 'BOOK NOW';
-              const buttonLink = box.buttonLink;
-
-              return (
-                <motion.div
-                  key={index}
-                  className="flex flex-col justify-between bg-black text-[#00AACB] w-full md:w-[320px] text-center p-8 rounded-2xl shadow-xl"
-                  custom={index}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={{
-                    hidden: { opacity: 0, y: 50 },
-                    visible: i => ({
-                      opacity: 1,
-                      y: 0,
-                      transition: { delay: i * 0.2, duration: 0.5, ease: 'easeOut' }
-                    })
-                  }}
-                >
-                  <div className="flex flex-col items-center space-y-4">
-                    {iconSrc && (
-                      <img 
-                        src={iconSrc} 
-                        alt={heading || ''} 
-                        className="w-auto h-[80px] object-contain" 
-                      />
-                    )}
-                    <div className="space-y-4 w-full">
-                      {heading && (
-                        <div className="text-base min-[820px]:text-lg uppercase text-white font-bold tracking-tight">
-                          {heading}
-                        </div>
-                      )}
-                      {price && (
-                        <div className="text-3xl min-[820px]:text-5xl font-extrabold text-[#00AACB]">
-                          {price}
-                        </div>
-                      )}
-                      <div className="text-white text-opacity-60 font-semibold text-sm">
-                        PER PERSON
-                      </div>
-                      {details.length > 0 && (
-                        <div className="text-xs min-[820px]:text-sm text-white mt-4 leading-relaxed space-y-1">
-                          {details.map((item, dIdx) => (
-                            <div key={dIdx}>{item}</div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {buttonText && (
-                    <div className="pt-6 mt-auto">
-                      <button
-                        onClick={() => {
-                          if (buttonLink) {
-                            handleNavigation(buttonLink, navigate);
-                          } else {
-                            handleBooking();
-                          }
-                        }}
-                        className="w-full bg-[#00AACB] hover:bg-[#E1017D] hover:scale-105 transition-all duration-300 text-white rounded-full py-3 px-6 text-sm font-bold uppercase tracking-wider shadow cursor-pointer"
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full max-w-6xl mx-auto px-4 my-8 md:my-14"
+          >
+            <div className="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-neutral-400">
+              <table className="w-full min-w-[780px] lg:min-w-[960px] border-collapse table-fixed">
+                <thead>
+                  <tr>
+                    {/* Top-left empty cell */}
+                    <th className="w-[22%] min-w-[180px] border-r border-black p-2 bg-transparent"></th>
+                    {packagesList.map((pkg, idx) => (
+                      <th
+                        key={idx}
+                        className="w-[19.5%] border-r border-black p-3 md:p-4 text-center font-black text-xs sm:text-sm md:text-base text-black uppercase tracking-wider bg-transparent align-bottom"
                       >
-                        {buttonText}
-                      </button>
-                    </div>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
+                        {pkg.title}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {TABLE_ROWS.map((row) => (
+                    <tr key={row.id}>
+                      {/* Left Pink Header Cell */}
+                      <td className="border-t border-b border-l border-r border-black bg-[#E1017D] p-3 md:p-4 align-middle">
+                        <div className="flex items-center gap-2.5 sm:gap-3.5">
+                          <img
+                            src={row.icon}
+                            alt={row.label}
+                            className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain shrink-0"
+                          />
+                          <span className="font-black text-white text-xs sm:text-sm md:text-base lg:text-lg uppercase tracking-tight leading-tight">
+                            {row.label}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Package Data Cells */}
+                      {packagesList.map((pkg, pIdx) => (
+                        <td
+                          key={pIdx}
+                          className={`border-t border-b border-r border-black bg-white p-3 md:p-4 text-center align-middle ${
+                            row.id === 'price' ? 'cursor-pointer hover:bg-neutral-50 transition-colors' : ''
+                          }`}
+                          onClick={
+                            row.id === 'price'
+                              ? () => {
+                                  if (pkg.buttonLink) {
+                                    handleNavigation(pkg.buttonLink, navigate);
+                                  } else {
+                                    handleBooking();
+                                  }
+                                }
+                              : undefined
+                          }
+                        >
+                          {row.render(pkg)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Book A Package Button */}
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={handleHeroBooking}
+                className="bg-[#00AACB] hover:bg-[#E1017D] hover:scale-105 transition-all duration-300 text-white rounded-full px-10 py-3.5 md:py-4 text-base md:text-xl font-extrabold uppercase shadow-[0_0_20px_rgba(0,170,203,0.4)] cursor-pointer"
+              >
+                Book A Package
+              </button>
+            </div>
+          </motion.div>
         )}
 
         {budgetText && (
