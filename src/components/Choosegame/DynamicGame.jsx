@@ -4,12 +4,10 @@ import { useParams, Link } from 'react-router-dom';
 import Navbar from '../Navbar';
 import per from '../../assets/per.svg';
 import clock2 from '../../assets/clock2.svg';
-import min from '../../assets/min.svg';
 import lane from '../../assets/sing.svg';
 import { motion } from 'framer-motion';
 import Footer from '../Footer';
 import dollar from '../../assets/dollar.svg';
-import wheel from '../../assets/wheel.svg';
 import OtherGames from '../Home/OtherGames';
 import { useGame } from '../../hooks/useGames';
 import { resolveImageUrl } from '../../hooks/useSiteContent';
@@ -45,13 +43,41 @@ const DynamicGame = () => {
   const gameName = game.name || game.gameName || 'Game';
   const heroImage = resolveImageUrl(game.imageUrl || game.image) || duck;
   const headlineText = game.headline || '';
-  const durationText = game.duration || game.timeOption || '-';
-  const priceText = game.pricePerPerson !== undefined ? `$${game.pricePerPerson}` : '-';
-  const minAgeText = game.minimumAgeRequirement || '-';
-  const wheelchairText = game.wheelchairAccessible !== undefined ? (game.wheelchairAccessible ? 'Yes' : 'No') : '-';
-  const idRequirementText = game.idRequired !== undefined ? (game.idRequired ? 'ID Required' : 'No ID Required') : '';
-  const capacityText = game.peopleAllowedPerLane !== undefined ? `${game.peopleAllowedPerLane} People` : '-';
-  const lanesText = game.totalLanes !== undefined ? `${game.totalLanes} Lanes` : '-';
+
+  const isNotEmpty = (val) =>
+    val !== undefined &&
+    val !== null &&
+    String(val).trim() !== '' &&
+    String(val).trim() !== '-';
+
+  const hasCapacity = isNotEmpty(game.peopleAllowedPerLane);
+  const capacityRaw = hasCapacity ? String(game.peopleAllowedPerLane).trim() : '';
+  const capacityText = hasCapacity
+    ? (/people|person/i.test(capacityRaw) ? capacityRaw : `${capacityRaw} People`)
+    : '';
+
+  const hasLanes = isNotEmpty(game.totalLanes);
+  const lanesRaw = hasLanes ? String(game.totalLanes).trim() : '';
+  const lanesText = hasLanes
+    ? (/lanes?/i.test(lanesRaw) ? lanesRaw : `${lanesRaw} Lanes`)
+    : '';
+
+  const rawDuration = isNotEmpty(game.duration)
+    ? game.duration
+    : isNotEmpty(game.timeOption)
+    ? game.timeOption
+    : null;
+  const hasDuration = Boolean(rawDuration);
+  const durationText = hasDuration ? String(rawDuration).trim() : '';
+
+  const hasPrice = isNotEmpty(game.pricePerPerson);
+  const priceRaw = hasPrice ? String(game.pricePerPerson).trim() : '';
+  const priceText = hasPrice
+    ? (priceRaw.startsWith('$') ? priceRaw : `$${priceRaw}`)
+    : '';
+
+  const hasCol1 = hasCapacity || hasLanes;
+  const hasCol2 = hasDuration || hasPrice;
 
   const columnVariants = {
     hidden: { opacity: 0, x: -100 },
@@ -122,100 +148,91 @@ const DynamicGame = () => {
           </p>
         </section>
 
-        <div className="flex flex-col md:flex-row justify-center gap-4 p-4 mt-4">
-          <motion.div
-            className="flex flex-col"
-            custom={0}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={columnVariants}
-          >
-            <div className="bg-black text-[#00AACB] w-full min-[820px]:w-[280px] p-4 space-y-4">
-              <div className="flex items-center gap-3">
-                <img src={per} alt="user" className="w-auto h-[90px] min-[820px]:h-[110px]" />
-                <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                  <div className="text-xs min-[820px]:text-sm uppercase">Capacity</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">
-                    {capacityText}
-                  </div>
-                  <div className="text-xs min-[820px]:text-sm uppercase">Per Lane</div>
-                </div>
-              </div>
-              <div className="border-b border-[#00AACB] mx-2"></div>
-              <div className="flex items-center gap-3">
-                <img src={lane} alt="lanes" className="w-auto h-[90px] min-[820px]:h-[105px]" />
-                <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                  <div className="text-xs min-[820px]:text-sm uppercase">Lanes</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold uppercase">
-                    {lanesText}
-                  </div>
-                  <div className="text-xs min-[820px]:text-sm uppercase">Total Lanes</div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+        {(hasCol1 || hasCol2) && (
+          <div className="flex flex-col md:flex-row justify-center gap-4 p-4 mt-4">
+            {hasCol1 && (
+              <motion.div
+                className="flex flex-col"
+                custom={0}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={columnVariants}
+              >
+                <div className="bg-black text-[#00AACB] w-full min-[820px]:w-[280px] p-4 space-y-4 h-full flex flex-col justify-center">
+                  {hasCapacity && (
+                    <div className="flex items-center gap-3">
+                      <img src={per} alt="user" className="w-auto h-[90px] min-[820px]:h-[110px]" />
+                      <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
+                        <div className="text-xs min-[820px]:text-sm uppercase">Capacity</div>
+                        <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">
+                          {capacityText}
+                        </div>
+                        <div className="text-xs min-[820px]:text-sm uppercase">Per Lane</div>
+                      </div>
+                    </div>
+                  )}
 
-          <motion.div
-            className="flex flex-col"
-            custom={1}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={columnVariants}
-          >
-            <div className="bg-black text-[#00AACB] w-full min-[820px]:w-[280px] p-4 space-y-4">
-              <div className="flex items-center gap-3">
-                <img src={clock2} alt="clock" className="w-auto h-[90px] min-[820px]:h-[110px]" />
-                <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                  <div className="text-xs min-[820px]:text-sm uppercase">Time</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{durationText}</div>
-                  <div className="text-xs min-[820px]:text-sm uppercase">Duration</div>
-                </div>
-              </div>
-              <div className="border-b border-[#00AACB]"></div>
-              <div className="flex items-center gap-6">
-                <img src={dollar} alt="dollar" className="w-auto h-[90px] min-[820px]:h-[105px]" />
-                <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                  <div className="text-xs min-[820px]:text-sm uppercase">Price</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{priceText}</div>
-                  <div className="text-xs min-[820px]:text-sm uppercase">Per Person</div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+                  {hasCapacity && hasLanes && (
+                    <div className="border-b border-[#00AACB] mx-2"></div>
+                  )}
 
-          <motion.div
-            className="flex flex-col"
-            custom={2}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={columnVariants}
-          >
-            <div className="bg-black text-[#00AACB] w-full min-[820px]:w-[280px] p-4 space-y-4">
-              <div className="flex items-center gap-3">
-                <img src={min} alt="group" className="w-auto h-[90px] min-[820px]:h-[110px]" />
-                <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                  <div className="text-xs min-[820px]:text-sm uppercase">Minimum Age</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{minAgeText}</div>
-                  <div className="text-xs min-[820px]:text-sm uppercase">Requirement</div>
-                </div>
-              </div>
-              <div className="border-b border-[#00AACB]"></div>
-              <div className="flex items-center gap-3">
-                <img src={wheel} alt="wheelchair" className="w-auto h-[90px] min-[820px]:h-[105px]" />
-                <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                  <div className="text-xs min-[820px]:text-sm uppercase">Wheelchair Access</div>
-                  <div className="text-lg min-[820px]:text-xl font-bold mb-2">{wheelchairText}</div>
-                  {idRequirementText && (
-                    <div className="text-xs min-[820px]:text-sm uppercase">{idRequirementText}</div>
+                  {hasLanes && (
+                    <div className="flex items-center gap-3">
+                      <img src={lane} alt="lanes" className="w-auto h-[90px] min-[820px]:h-[105px]" />
+                      <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
+                        <div className="text-xs min-[820px]:text-sm uppercase">Lanes</div>
+                        <div className="text-lg min-[820px]:text-xl font-bold uppercase">
+                          {lanesText}
+                        </div>
+                        <div className="text-xs min-[820px]:text-sm uppercase">Total Lanes</div>
+                      </div>
+                    </div>
                   )}
                 </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
+              </motion.div>
+            )}
+
+            {hasCol2 && (
+              <motion.div
+                className="flex flex-col"
+                custom={hasCol1 ? 1 : 0}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={columnVariants}
+              >
+                <div className="bg-black text-[#00AACB] w-full min-[820px]:w-[280px] p-4 space-y-4 h-full flex flex-col justify-center">
+                  {hasDuration && (
+                    <div className="flex items-center gap-3">
+                      <img src={clock2} alt="clock" className="w-auto h-[90px] min-[820px]:h-[110px]" />
+                      <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
+                        <div className="text-xs min-[820px]:text-sm uppercase">Time</div>
+                        <div className="text-lg min-[820px]:text-xl font-bold mb-2">{durationText}</div>
+                        <div className="text-xs min-[820px]:text-sm uppercase">Duration</div>
+                      </div>
+                    </div>
+                  )}
+
+                  {hasDuration && hasPrice && (
+                    <div className="border-b border-[#00AACB]"></div>
+                  )}
+
+                  {hasPrice && (
+                    <div className="flex items-center gap-6">
+                      <img src={dollar} alt="dollar" className="w-auto h-[90px] min-[820px]:h-[105px]" />
+                      <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
+                        <div className="text-xs min-[820px]:text-sm uppercase">Price</div>
+                        <div className="text-lg min-[820px]:text-xl font-bold mb-2">{priceText}</div>
+                        <div className="text-xs min-[820px]:text-sm uppercase">Per Person</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </div>
+        )}
 
         <div className="flex justify-center mt-8">
           <button

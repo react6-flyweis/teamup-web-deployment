@@ -222,37 +222,62 @@ const QueensNight = () => {
 
             {statsBlocks.length > 0 && (
               <div className="flex flex-col md:flex-row justify-center gap-4 p-4 mt-4">
-                {statsBlocks.map((box, index) => {
-                  const iconSrc = iconMap[box.iconType] || (box.iconType && box.iconType.startsWith('http') ? box.iconType : min);
-                  const headingText = (box.topText || (box.iconType === 'age' ? 'AGE' : box.iconType === 'price' ? 'FROM' : '')).trim() || 'INFO';
-                  const mainVal = box.mainText || box.value || '';
-                  const subVal = box.subText || box.sub || '';
+                {[...statsBlocks]
+                  .sort((a, b) => {
+                    if (typeof a.order === 'number' && typeof b.order === 'number') {
+                      return a.order - b.order;
+                    }
+                    return 0;
+                  })
+                  .map((box, index) => {
+                    const rawIcon = typeof box.icon === 'string' ? box.icon : box.icon?.url;
+                    const iconSrc =
+                      (rawIcon && (iconMap[rawIcon] || rawIcon)) ||
+                      iconMap[box.iconType] ||
+                      iconMap[box.id] ||
+                      (box.iconType && typeof box.iconType === 'string' && box.iconType.startsWith('http') ? box.iconType : min);
 
-                  return (
-                    <motion.div
-                      key={box.id || index}
-                      className="flex flex-col bg-black text-[#00AACB] w-full min-[820px]:w-[280px] text-center p-6"
-                      custom={index}
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true }}
-                      variants={columnVariants}
-                    >
-                      <div className="flex flex-col items-center space-y-4">
-                        <img src={iconSrc} alt={headingText} className="w-auto h-[80px]" />
-                        <div className="space-y-2">
-                          <div className="text-sm min-[820px]:text-base uppercase text-white">{headingText}</div>
-                          <div className="text-2xl min-[820px]:text-4xl font-extrabold">{mainVal}</div>
-                          {subVal && (
-                            <div className="text-xs min-[820px]:text-sm text-white mt-1 whitespace-pre-line">
-                              {subVal}
-                            </div>
-                          )}
+                    const headingText = (
+                      box.topText ||
+                      (box.id === 'age' || box.iconType === 'age' ? 'AGE' :
+                       box.id === 'price' || box.iconType === 'price' ? 'FROM' :
+                       box.id === 'duration' || box.iconType === 'duration' ? 'FOR' : '')
+                    ).trim() || 'INFO';
+
+                    const mainVal = box.mainText || box.value || '';
+                    const subVal = box.subText || box.sub || '';
+
+                    const bgImageUrl = typeof box.backgroundImageUrl === 'string'
+                      ? box.backgroundImageUrl.trim()
+                      : (box.backgroundImageUrl?.url || box.backgroundImage || box.bgImage || '');
+                    const hasBgImage = Boolean(bgImageUrl);
+
+                    return (
+                      <motion.div
+                        key={box.id || index}
+                        style={hasBgImage ? { backgroundImage: `url(${bgImageUrl})` } : undefined}
+                        className={`flex flex-col ${hasBgImage ? 'bg-cover bg-center bg-no-repeat' : 'bg-black'} text-[#00AACB] w-full min-[820px]:w-[280px] text-center p-6`}
+                        custom={index}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={columnVariants}
+                      >
+                        <div className="flex flex-col items-center space-y-4">
+                          <img src={iconSrc} alt={headingText} className="w-auto h-[80px] object-contain" />
+                          <div className="space-y-2">
+                            <div className="text-sm min-[820px]:text-base uppercase text-white">{headingText}</div>
+                            <div className="text-2xl min-[820px]:text-4xl font-extrabold">{mainVal}</div>
+                            {subVal && (
+                              <div className="text-xs min-[820px]:text-sm text-white mt-1 whitespace-pre-line">
+                                {subVal}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                      </motion.div>
+                    );
+                  })}
               </div>
             )}
           </section>
