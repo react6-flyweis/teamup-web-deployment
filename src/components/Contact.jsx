@@ -185,13 +185,33 @@ const Contact = () => {
 
   // Handle URL query parameter pre-selection
   useEffect(() => {
+    // Check if event or events flag is present (?event=true, ?event, ?events, etc.)
+    const hasEventFlag =
+      searchParams.has('event') ||
+      searchParams.has('events') ||
+      searchParams.get('tab') === 'event';
+
     const typeParam = searchParams.get('type') || searchParams.get('enquiryType');
-    if (typeParam) {
-      if (typeParam.toLowerCase() === 'event') {
-        setValue('enquiryType', 'Event');
-      } else if (['general', 'support', 'sales'].includes(typeParam.toLowerCase())) {
+    const celebrationParam = searchParams.get('celebration') || searchParams.get('eventType');
+
+    if (hasEventFlag || (typeParam && ['event', 'events'].includes(typeParam.toLowerCase()))) {
+      setValue('enquiryType', 'Event');
+    } else if (typeParam) {
+      if (['general', 'support', 'sales'].includes(typeParam.toLowerCase())) {
         const formatted = typeParam.charAt(0).toUpperCase() + typeParam.slice(1).toLowerCase();
         setValue('enquiryType', formatted);
+      }
+    }
+
+    // Also support pre-selecting event celebration type if provided (e.g. ?celebration=birthday or ?eventType=Corporate)
+    if (celebrationParam) {
+      const match = CELEBRATION_TYPES.find(
+        (c) => c.toLowerCase() === celebrationParam.toLowerCase() ||
+               c.toLowerCase().includes(celebrationParam.toLowerCase())
+      );
+      if (match) {
+        setValue('enquiryType', 'Event');
+        setValue('eventType', match);
       }
     }
   }, [searchParams, setValue]);
