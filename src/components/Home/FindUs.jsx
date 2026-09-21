@@ -31,10 +31,11 @@ const FindUs = () => {
         .join(', ')
     : '';
 
+  const rawMapImage = selectedLocation?.mapImageUrl || selectedLocation?.mapImage;
   const mapImage =
-    typeof selectedLocation?.mapImage === 'string'
-      ? selectedLocation.mapImage
-      : selectedLocation?.mapImage?.url || selectedLocation?.mapImage?.src || null;
+    typeof rawMapImage === 'string'
+      ? rawMapImage
+      : rawMapImage?.url || rawMapImage?.src || null;
 
   const mapLink =
     selectedLocation?.mapLink ||
