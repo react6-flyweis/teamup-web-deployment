@@ -52,6 +52,9 @@ const DynamicGame = lazy(() => import('./components/Choosegame/DynamicGame'));
 const DynamicActivity = lazy(() => import('./components/GroupActivities/DynamicActivity'));
 const ComingSoon = lazy(() => import('./components/ComingSoon'));
 const NotFound = lazy(() => import('./components/NotFound'));
+const SocialEvents = lazy(() => import('./components/Events/SocialEvents'));
+const CorporateEvents = lazy(() => import('./components/Events/CorporateEvents'));
+
 
 
 const LoadingFallback = () => (
@@ -103,7 +106,10 @@ const App = () => {
         <Route path="/cart" element={<Cart />} />
         <Route path="/drinks-and-cocktails" element={<DrinksMenu />} />
         <Route path="/drinks-and-cocktails-details" element={<Drinks />} />
+        <Route path="/social-events" element={<SocialEvents />} />
+        <Route path="/corporate-events" element={<CorporateEvents />} />
         <Route path="/corporates" element={<Corporatebooking />} />
+
         <Route path="/cookies" element={<Cookies />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
