@@ -5,6 +5,11 @@ import { useBooking } from "../../hooks/useBooking";
 import { resolveImageUrl } from "../../hooks/useSiteContent";
 import { handleNavigation, isExternalUrl, getHref } from "../../utils/navigation";
 
+const isVideoUrl = (url = '') => {
+  if (!url || typeof url !== 'string') return false;
+  return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url);
+};
+
 const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) => {
   const { data, isLoading, error } = useGames();
   const handleBooking = useBooking();
@@ -27,12 +32,28 @@ const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) =
     games = items
       .filter((game) => game.isActive !== false)
       .sort((a, b) => (a.order || 0) - (b.order || 0))
-      .map((game) => ({
-        title: game.title || game.name,
-        image: resolveImageUrl(game.imageUrl || game.image || ""),
-        link: game.buttonLink || (game.slug ? `/games/${game.slug}` : ""),
-        buttonText: game.buttonText || "BOOK NOW",
-      }));
+      .map((game) => {
+        const rawMedia = game.videoUrl || game.imageUrl || game.image || game.mediaUrl || "";
+        const resolvedMedia = resolveImageUrl(rawMedia);
+        const isVideo =
+          game.mediaType === "video" ||
+          Boolean(game.videoUrl) ||
+          isVideoUrl(rawMedia) ||
+          isVideoUrl(resolvedMedia);
+        const posterUrl =
+          isVideo && game.videoUrl && (game.imageUrl || game.image)
+            ? resolveImageUrl(game.imageUrl || game.image)
+            : undefined;
+
+        return {
+          title: game.title || game.name,
+          image: resolvedMedia,
+          isVideo,
+          poster: posterUrl,
+          link: game.buttonLink || (game.slug ? `/games/${game.slug}` : ""),
+          buttonText: game.buttonText || "BOOK NOW",
+        };
+      });
   } else {
     const apiGames = data?.games || [];
     games = apiGames
@@ -44,12 +65,28 @@ const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) =
         }
         return true;
       })
-      .map((game) => ({
-        title: game.name,
-        image: resolveImageUrl(game.imageUrl || ""),
-        link: `/games/${game.slug}`,
-        buttonText: "BOOK NOW",
-      }));
+      .map((game) => {
+        const rawMedia = game.videoUrl || game.imageUrl || game.image || game.mediaUrl || "";
+        const resolvedMedia = resolveImageUrl(rawMedia);
+        const isVideo =
+          game.mediaType === "video" ||
+          Boolean(game.videoUrl) ||
+          isVideoUrl(rawMedia) ||
+          isVideoUrl(resolvedMedia);
+        const posterUrl =
+          isVideo && game.videoUrl && (game.imageUrl || game.image)
+            ? resolveImageUrl(game.imageUrl || game.image)
+            : undefined;
+
+        return {
+          title: game.name,
+          image: resolvedMedia,
+          isVideo,
+          poster: posterUrl,
+          link: `/games/${game.slug}`,
+          buttonText: "BOOK NOW",
+        };
+      });
   }
 
   if (games.length === 0) {
@@ -70,12 +107,24 @@ const OtherGames = ({ excludeSlug, showHeading = true, items, filterGameIds }) =
             className="relative group overflow-hidden rounded-md h-[300px] sm:h-[350px] md:h-[400px] cursor-pointer"
           >
             {game.image ? (
-              <img
-                src={game.image}
-                alt={game.title}
-                loading="lazy"
-                className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
-              />
+              game.isVideo ? (
+                <video
+                  src={game.image}
+                  poster={game.poster}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                />
+              ) : (
+                <img
+                  src={game.image}
+                  alt={game.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                />
+              )
             ) : (
               <div className="w-full h-full bg-gray-900 flex items-center justify-center text-white">
                 No Image Available
