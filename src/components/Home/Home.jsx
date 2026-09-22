@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useBooking } from '../../hooks/useBooking';
 import { useSiteContent, resolveImageUrl } from '../../hooks/useSiteContent';
-import vid from '../../assets/videos/vid.mp4';
 import bg from '../../assets/stepdown2.jpg';
 import Footer from '../Footer';
 import PromoModal from './PromoModal';
@@ -110,7 +109,6 @@ const Home = () => {
   return (
     <>
       <Hero
-        vid={vid}
         handleClick={handleClick}
         heroData={heroData}
         topBanner={topBanner}
