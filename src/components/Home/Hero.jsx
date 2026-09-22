@@ -1,14 +1,20 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import { resolveImageUrl } from '../../hooks/useSiteContent';
 import { handleNavigation } from '../../utils/navigation';
 
+const isVideoUrl = (url = '') => {
+  if (!url || typeof url !== 'string') return false;
+  return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url.trim());
+};
+
 const Hero = ({ heroData, topBanner, vid, handleClick }) => {
   // const { selectedLocation } = useLocationContext();
   const navigate = useNavigate();
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef(null);
 
   const title = heroData?.title;
   // const locationText = selectedLocation?.city && selectedLocation?.state 
@@ -35,38 +41,87 @@ const Hero = ({ heroData, topBanner, vid, handleClick }) => {
     }
   };
 
-  const rawVideoUrl = heroData?.videoUrl;
-  const rawImageUrl = heroData?.mediaUrl || heroData?.backgroundMediaUrl || heroData?.imageUrl;
+  const rawVideoUrl = heroData?.videoUrl?.trim ? heroData.videoUrl.trim() : (heroData?.videoUrl || '');
+  const rawBgMediaUrl = heroData?.backgroundMediaUrl?.trim
+    ? heroData.backgroundMediaUrl.trim()
+    : (heroData?.backgroundMediaUrl || heroData?.mediaUrl || heroData?.imageUrl || '');
 
-  const videoUrl = rawVideoUrl
-    ? resolveImageUrl(rawVideoUrl)
-    : (!rawImageUrl && vid ? vid : null);
-  const imageUrl = rawImageUrl ? resolveImageUrl(rawImageUrl) : null;
+  // Media resolution:
+  // If videoUrl is provided, use it for the video, and backgroundMediaUrl as the fallback / poster.
+  // If videoUrl is not provided, use backgroundMediaUrl only (as image or video depending on media type).
+  let videoUrl = null;
+  let posterUrl = null;
+  let imageUrl = null;
+
+  if (rawVideoUrl) {
+    videoUrl = resolveImageUrl(rawVideoUrl);
+    posterUrl = rawBgMediaUrl ? resolveImageUrl(rawBgMediaUrl) : null;
+    imageUrl = posterUrl;
+  } else if (rawBgMediaUrl) {
+    if (isVideoUrl(rawBgMediaUrl) || heroData?.bgMediaType === 'video' || heroData?.mediaType === 'video') {
+      videoUrl = resolveImageUrl(rawBgMediaUrl);
+    } else {
+      imageUrl = resolveImageUrl(rawBgMediaUrl);
+    }
+  } else if (vid) {
+    videoUrl = resolveImageUrl(vid);
+  }
+
+  useEffect(() => {
+    setIsVideoPlaying(false);
+    setVideoError(false);
+
+    if (videoRef.current && videoUrl) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          // Autoplay policy may restrict unmuted playback before user gesture
+          console.warn('Hero video autoplay prevented:', err);
+        });
+      }
+    }
+  }, [videoUrl]);
 
   return (
-    <div className="relative w-full overflow-hidden min-h-fit md:h-screen">
+    <div className="relative w-full overflow-hidden min-h-fit md:h-screen bg-[#121212]">
       <Navbar topBanner={topBanner} />
 
-      {/* Background Media - Image acts as immediate background & video fallback */}
+      {/* Fallback & Background Image:
+          - Shows immediately while video is buffering/loading
+          - Shows as the sole background if no video is provided or if video encounters an error
+      */}
       {imageUrl && (
         <img
           src={imageUrl}
           alt={title || "Hero Background"}
-          className="absolute top-10 left-0 w-full h-full object-cover z-0"
+          loading="eager"
+          fetchPriority="high"
+          className="absolute inset-0 w-full h-full object-cover z-0"
         />
       )}
 
+      {/* Background Video:
+          - Keeps opacity-0 until onPlaying fires (guaranteeing rendered frames and avoiding gray box)
+          - Smoothly fades in once playback is actively running
+      */}
       {videoUrl && !videoError && (
         <video
+          ref={videoRef}
+          key={videoUrl}
           autoPlay
           loop
           muted
           playsInline
-          poster={imageUrl || undefined}
-          onLoadedData={() => setIsVideoLoaded(true)}
-          onError={() => setVideoError(true)}
-          className={`absolute top-10 left-0 w-full h-full object-cover z-0 transition-opacity duration-700 ${
-            isVideoLoaded || !imageUrl ? 'opacity-100' : 'opacity-0'
+          preload="auto"
+          onPlaying={() => setIsVideoPlaying(true)}
+          onError={() => {
+            setVideoError(true);
+            setIsVideoPlaying(false);
+          }}
+          className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-700 bg-transparent ${
+            isVideoPlaying ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
         >
           <source src={videoUrl} type="video/mp4" />
