@@ -1,4 +1,4 @@
-import React from 'react'; 
+import React, { useState, useRef, useEffect } from 'react'; 
 import { useBooking } from '../../hooks/useBooking';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../Navbar';
@@ -15,10 +15,60 @@ import { resolveImageUrl } from '../../hooks/useSiteContent';
 const duck = '/assets/dance.svg';
 const texture = '/assets/texture.svg';
 
+const isVideoUrl = (url = '') => {
+  if (!url || typeof url !== 'string') return false;
+  return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(url.trim());
+};
+
 const DynamicGame = () => {
   const handleBooking = useBooking();
   const { slug } = useParams();
   const { data, isLoading, error } = useGame(slug);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef(null);
+
+  const game = data?.game;
+  const gameName = game?.name || game?.gameName || 'Game';
+
+  const rawVideoUrl = game?.videoUrl?.trim ? game.videoUrl.trim() : (game?.videoUrl || '');
+  const rawBgMediaUrl = game?.imageUrl?.trim
+    ? game.imageUrl.trim()
+    : (game?.imageUrl || game?.image || game?.mediaUrl || '');
+
+  let videoUrl = null;
+  let heroImage = duck;
+
+  if (rawVideoUrl) {
+    videoUrl = resolveImageUrl(rawVideoUrl);
+    heroImage = (rawBgMediaUrl ? resolveImageUrl(rawBgMediaUrl) : null) || duck;
+  } else if (rawBgMediaUrl) {
+    if (isVideoUrl(rawBgMediaUrl) || game?.bgMediaType === 'video' || game?.mediaType === 'video') {
+      videoUrl = resolveImageUrl(rawBgMediaUrl);
+      heroImage = duck;
+    } else {
+      heroImage = resolveImageUrl(rawBgMediaUrl) || duck;
+    }
+  } else if (game?.video) {
+    videoUrl = resolveImageUrl(game.video);
+  }
+
+  useEffect(() => {
+    setIsVideoPlaying(false);
+    setVideoError(false);
+
+    if (videoRef.current && videoUrl) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          // Autoplay policy may restrict unmuted playback before user gesture
+          console.warn('Game video autoplay prevented:', err);
+        });
+      }
+    }
+  }, [videoUrl]);
 
   if (isLoading) {
     return (
@@ -39,9 +89,6 @@ const DynamicGame = () => {
     );
   }
 
-  const game = data.game;
-  const gameName = game.name || game.gameName || 'Game';
-  const heroImage = resolveImageUrl(game.imageUrl || game.image) || duck;
   const headlineText = game.headline || '';
 
   const isNotEmpty = (val) =>
@@ -94,14 +141,52 @@ const DynamicGame = () => {
 
   return (
     <>
-      <div className="relative md:h-screen w-full overflow-hidden">
+      <div className="relative md:h-screen w-full overflow-hidden bg-[#121212]">
         <Navbar />
-        <div
-          style={{ backgroundImage: `url(${heroImage})` }}
-          className="absolute top-12 left-0 w-full h-full bg-cover bg-center object-cover z-0"
-        ></div>
 
-        <div className="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+        {/* Fallback & Background Image:
+            - Shows immediately while video is buffering/loading
+            - Shows as the sole background if no video is provided or if video encounters an error
+        */}
+        {heroImage && (
+          <img
+            src={heroImage}
+            alt={gameName || "Game Background"}
+            loading="eager"
+            fetchPriority="high"
+            className="absolute inset-0 w-full h-full object-cover z-0"
+          />
+        )}
+
+        {/* Background Video:
+            - Keeps opacity-0 until onPlaying fires (guaranteeing rendered frames and avoiding gray box)
+            - Smoothly fades in once playback is actively running
+        */}
+        {videoUrl && !videoError && (
+          <video
+            ref={videoRef}
+            key={videoUrl}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            onPlaying={() => setIsVideoPlaying(true)}
+            onError={() => {
+              setVideoError(true);
+              setIsVideoPlaying(false);
+            }}
+            className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-700 bg-transparent ${
+              isVideoPlaying ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+          >
+            <source src={videoUrl} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        )}
+
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black bg-opacity-50 z-10 pointer-events-none"></div>
 
         {/* Content */}
         <div className="relative z-20 flex flex-col items-center justify-center md:h-full py-20 text-center px-4 text-white">
