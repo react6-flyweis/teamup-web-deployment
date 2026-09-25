@@ -28,3 +28,18 @@ export const useGame = (slug) => {
   });
 };
 
+/**
+ * Fetch attribute icons for games from the API using TanStack Query.
+ */
+export const useGameAttributeIcons = () => {
+  return useQuery({
+    queryKey: ['gameAttributeIcons'],
+    queryFn: async () => {
+      const response = await api.get('/api/games/attribute-icons');
+      return response.data;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes cache
+  });
+};
+
+
