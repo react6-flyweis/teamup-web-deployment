@@ -1,15 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react'; 
+import React, { useState, useRef, useEffect, useMemo } from 'react'; 
 import { useBooking } from '../../hooks/useBooking';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../Navbar';
 import per from '../../assets/per.svg';
 import clock2 from '../../assets/clock2.svg';
 import lane from '../../assets/sing.svg';
+import dollar from '../../assets/dollar.svg';
+import min from '../../assets/min.svg';
+import wheel from '../../assets/wheel.svg';
 import { motion } from 'framer-motion';
 import Footer from '../Footer';
-import dollar from '../../assets/dollar.svg';
 import OtherGames from '../Home/OtherGames';
-import { useGame } from '../../hooks/useGames';
+import { useGame, useGameAttributeIcons } from '../../hooks/useGames';
 import { resolveImageUrl } from '../../hooks/useSiteContent';
 
 const duck = '/assets/dance.svg';
@@ -24,9 +26,33 @@ const DynamicGame = () => {
   const handleBooking = useBooking();
   const { slug } = useParams();
   const { data, isLoading, error } = useGame(slug);
+  const { data: attributeIconsData } = useGameAttributeIcons();
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const videoRef = useRef(null);
+
+  const attributeIconsMap = useMemo(() => {
+    const list = attributeIconsData?.icons || [];
+    const map = {};
+    list.forEach((item) => {
+      if (item?.key) {
+        map[item.key] = item;
+      }
+    });
+    return map;
+  }, [attributeIconsData]);
+
+  const getAttributeIcon = (key, fallbackSvg) => {
+    const item = attributeIconsMap[key];
+    if (item?.iconUrl && typeof item.iconUrl === 'string' && item.iconUrl.trim() !== '') {
+      return resolveImageUrl(item.iconUrl.trim());
+    }
+    return fallbackSvg;
+  };
+
+  const getAttributeLabel = (key, fallbackLabel) => {
+    return attributeIconsMap[key]?.label || fallbackLabel;
+  };
 
   const game = data?.game;
   const gameName = game?.name || game?.gameName || 'Game';
@@ -123,8 +149,27 @@ const DynamicGame = () => {
     ? (priceRaw.startsWith('$') ? priceRaw : `$${priceRaw}`)
     : '';
 
+  const hasMinAge = isNotEmpty(game.minimumAgeRequirement) || isNotEmpty(game.minAge);
+  const minAgeText = hasMinAge
+    ? String(game.minimumAgeRequirement || game.minAge).trim()
+    : '';
+  const idRequirementText = game.idRequired ? 'ID Required' : '';
+
+  const hasWheelchair =
+    game.wheelchairAccessible === true ||
+    (isNotEmpty(game.wheelchairAccessible) &&
+      !['false', 'no', '0'].includes(String(game.wheelchairAccessible).toLowerCase().trim())) ||
+    (isNotEmpty(game.wheelchairAccess) &&
+      !['false', 'no', '0'].includes(String(game.wheelchairAccess).toLowerCase().trim()));
+  const wheelchairText = hasWheelchair
+    ? typeof game.wheelchairAccessible === 'boolean'
+      ? (game.wheelchairAccessible ? 'Yes' : 'No')
+      : String(game.wheelchairAccessible || game.wheelchairAccess).trim()
+    : '';
+
   const hasCol1 = hasCapacity || hasLanes;
   const hasCol2 = hasDuration || hasPrice;
+  const hasCol3 = hasMinAge || hasWheelchair;
 
   const columnVariants = {
     hidden: { opacity: 0, x: -100 },
@@ -233,7 +278,7 @@ const DynamicGame = () => {
           </p>
         </section>
 
-        {(hasCol1 || hasCol2) && (
+        {(hasCol1 || hasCol2 || hasCol3) && (
           <div className="flex flex-col md:flex-row justify-center gap-4 p-4 mt-4">
             {hasCol1 && (
               <motion.div
@@ -247,7 +292,14 @@ const DynamicGame = () => {
                 <div className="bg-black text-[#00AACB] w-full min-[820px]:w-[280px] p-4 space-y-4 h-full flex flex-col justify-center">
                   {hasCapacity && (
                     <div className="flex items-center gap-3">
-                      <img src={per} alt="user" className="w-auto h-[90px] min-[820px]:h-[110px]" />
+                      <img
+                        src={getAttributeIcon('totalPeoplePerLane', per)}
+                        alt={getAttributeLabel('totalPeoplePerLane', 'Capacity')}
+                        onError={(e) => {
+                          e.currentTarget.src = per;
+                        }}
+                        className="w-auto h-[90px] min-[820px]:h-[110px] object-contain"
+                      />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
                         <div className="text-xs min-[820px]:text-sm uppercase">Capacity</div>
                         <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">
@@ -264,7 +316,14 @@ const DynamicGame = () => {
 
                   {hasLanes && (
                     <div className="flex items-center gap-3">
-                      <img src={lane} alt="lanes" className="w-auto h-[90px] min-[820px]:h-[105px]" />
+                      <img
+                        src={getAttributeIcon('totalLanes', lane)}
+                        alt={getAttributeLabel('totalLanes', 'Total Lanes')}
+                        onError={(e) => {
+                          e.currentTarget.src = lane;
+                        }}
+                        className="w-auto h-[90px] min-[820px]:h-[105px] object-contain"
+                      />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
                         <div className="text-xs min-[820px]:text-sm uppercase">Lanes</div>
                         <div className="text-lg min-[820px]:text-xl font-bold uppercase">
@@ -290,7 +349,14 @@ const DynamicGame = () => {
                 <div className="bg-black text-[#00AACB] w-full min-[820px]:w-[280px] p-4 space-y-4 h-full flex flex-col justify-center">
                   {hasDuration && (
                     <div className="flex items-center gap-3">
-                      <img src={clock2} alt="clock" className="w-auto h-[90px] min-[820px]:h-[110px]" />
+                      <img
+                        src={getAttributeIcon('timeMin', clock2)}
+                        alt={getAttributeLabel('timeMin', 'Time (Min)')}
+                        onError={(e) => {
+                          e.currentTarget.src = clock2;
+                        }}
+                        className="w-auto h-[90px] min-[820px]:h-[110px] object-contain"
+                      />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
                         <div className="text-xs min-[820px]:text-sm uppercase">Time</div>
                         <div className="text-lg min-[820px]:text-xl font-bold mb-2">{durationText}</div>
@@ -305,7 +371,14 @@ const DynamicGame = () => {
 
                   {hasPrice && (
                     <div className="flex items-center gap-6">
-                      <img src={dollar} alt="dollar" className="w-auto h-[90px] min-[820px]:h-[105px]" />
+                      <img
+                        src={getAttributeIcon('pricePerPerson', dollar)}
+                        alt={getAttributeLabel('pricePerPerson', 'Price (Per Person)')}
+                        onError={(e) => {
+                          e.currentTarget.src = dollar;
+                        }}
+                        className="w-auto h-[90px] min-[820px]:h-[105px] object-contain"
+                      />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
                         <div className="text-xs min-[820px]:text-sm uppercase">Price</div>
                         <div className="text-lg min-[820px]:text-xl font-bold mb-2">{priceText}</div>
@@ -316,8 +389,68 @@ const DynamicGame = () => {
                 </div>
               </motion.div>
             )}
+
+            {hasCol3 && (
+              <motion.div
+                className="flex flex-col"
+                custom={(hasCol1 ? 1 : 0) + (hasCol2 ? 1 : 0)}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={columnVariants}
+              >
+                <div className="bg-black text-[#00AACB] w-full min-[820px]:w-[280px] p-4 space-y-4 h-full flex flex-col justify-center">
+                  {hasMinAge && (
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={getAttributeIcon('minAge', min)}
+                        alt={getAttributeLabel('minAge', 'Min. Age (ID Req)')}
+                        onError={(e) => {
+                          e.currentTarget.src = min;
+                        }}
+                        className="w-auto h-[90px] min-[820px]:h-[110px] object-contain"
+                      />
+                      <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
+                        <div className="text-xs min-[820px]:text-sm uppercase">Minimum Age</div>
+                        <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">
+                          {minAgeText}
+                        </div>
+                        {idRequirementText && (
+                          <div className="text-xs min-[820px]:text-sm uppercase">{idRequirementText}</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {hasMinAge && hasWheelchair && (
+                    <div className="border-b border-[#00AACB] mx-2"></div>
+                  )}
+
+                  {hasWheelchair && (
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={getAttributeIcon('wheelchairAccess', wheel)}
+                        alt={getAttributeLabel('wheelchairAccess', 'Wheelchair Access')}
+                        onError={(e) => {
+                          e.currentTarget.src = wheel;
+                        }}
+                        className="w-auto h-[90px] min-[820px]:h-[105px] object-contain"
+                      />
+                      <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
+                        <div className="text-xs min-[820px]:text-sm uppercase">Wheelchair Access</div>
+                        <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">
+                          {wheelchairText}
+                        </div>
+                        <div className="text-xs min-[820px]:text-sm uppercase">Call the provider</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
           </div>
         )}
+
 
         <div className="flex justify-center mt-8">
           <button
