@@ -18,7 +18,7 @@ const QueensNight = lazy(() => import('./components/GroupActivities/QueensNight'
 const KingsNight = lazy(() => import('./components/GroupActivities/KingsNight'));
 // const Baseball = lazy(() => import('./components/Choosegame/Baseball'));
 const FoodCombos = lazy(() => import('./components/GroupActivities/FoodCombos'));
-const FoodMenu = lazy(() => import('./components/GroupActivities/FoodMenu'));
+const FoodMenu = lazy(() => import('./components/BitesDrinks/FoodMenu'));
 // const Dance = lazy(() => import('./components/Choosegame/Dance'));
 // const Snooker = lazy(() => import('./components/Choosegame/Snooker'));
 const BookGames = lazy(() => import('./components/BookGames/BookGames'));

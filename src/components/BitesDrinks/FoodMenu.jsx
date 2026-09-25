@@ -4,8 +4,6 @@ import Footer from '../Footer';
 import { useSiteContent, resolveImageUrl } from '../../hooks/useSiteContent';
 import { useLocationContext } from '../../context/LocationContext';
 
-const texture = '/assets/texture.svg';
-
 const FoodMenu = () => {
   const [activeTab, setActiveTab] = useState('flatbreads');
   const { selectedLocation } = useLocationContext();
@@ -23,20 +21,25 @@ const FoodMenu = () => {
   }
 
   const contentData = siteContentData?.content?.data || siteContentData?.data || siteContentData;
-  const menuImages = contentData?.menuImages || {};
   const topBanner = contentData?.topBanner;
 
+  const bgWallpaperUrl = resolveImageUrl(contentData?.bgWallpaperImageUrl || contentData?.bgWallpaperImage);
+
+  const menuImages = contentData?.menuImages || {};
   const flatbreadsImg = resolveImageUrl(menuImages.flatbreads || menuImages.flatbread);
   const appetizersImg = resolveImageUrl(menuImages.appetizers || menuImages.appetizer);
 
   const currentImage = activeTab === 'flatbreads' ? flatbreadsImg : appetizersImg;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black">
       <Navbar topBanner={topBanner} />
 
       {/* Main Content: Full Card Size Image without outer container */}
-      <div className="w-full bg-fixed bg-cover bg-center py-12" style={{ backgroundImage: `url(${texture})` }}>
+      <div
+        className="w-full bg-black bg-fixed bg-cover bg-center py-12"
+        style={bgWallpaperUrl ? { backgroundImage: `url(${bgWallpaperUrl})` } : undefined}
+      >
         <div className="max-w-[1300px] mx-auto px-4 flex flex-col items-center">
           {/* Simplified Tabs */}
           <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
