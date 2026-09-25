@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import Navbar from '../Navbar';
 import Footer from '../Footer';
-import bg from '../../assets/stepdown2.jpg';
 import { useSiteContent, resolveImageUrl } from '../../hooks/useSiteContent';
 import { useLocationContext } from '../../context/LocationContext';
-
-const DEFAULT_COCKTAIL_IMAGE = 'https://teamup-live.s3.us-west-1.amazonaws.com/uploads/1789818247319-5d2b37ec-7a7f-47c6-99b3-ebf2f3661777.webp';
-const DEFAULT_BEER_IMAGE = 'https://teamup-live.s3.us-west-1.amazonaws.com/uploads/1789818251871-0256cdcd-a844-4425-854d-393c1cfc8138.webp';
 
 const DrinksMenu = () => {
   const [activeTab, setActiveTab] = useState('cocktails');
@@ -27,18 +23,23 @@ const DrinksMenu = () => {
   const contentData = siteContentData?.content?.data || siteContentData?.data || siteContentData;
   const topBanner = contentData?.topBanner;
 
+  const bgWallpaperUrl = resolveImageUrl(contentData?.bgWallpaperImageUrl || contentData?.bgWallpaperImage);
+
   const menuImages = contentData?.menuImages || {};
-  const cocktailImg = resolveImageUrl(menuImages.cocktails || menuImages.cocktail) || DEFAULT_COCKTAIL_IMAGE;
-  const beerImg = resolveImageUrl(menuImages.beer || menuImages.beers) || DEFAULT_BEER_IMAGE;
+  const cocktailImg = resolveImageUrl(menuImages.cocktails || menuImages.cocktail);
+  const beerImg = resolveImageUrl(menuImages.beer || menuImages.beers);
 
   const currentImage = activeTab === 'cocktails' ? cocktailImg : beerImg;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-black">
       <Navbar topBanner={topBanner} />
 
       {/* Main Content: Full Card Size Image without outer container */}
-      <div className="w-full bg-fixed bg-cover bg-center py-12" style={{ backgroundImage: `url(${bg})` }}>
+      <div
+        className="w-full bg-black bg-fixed bg-cover bg-center py-12"
+        style={bgWallpaperUrl ? { backgroundImage: `url(${bgWallpaperUrl})` } : undefined}
+      >
         <div className="max-w-[1300px] mx-auto px-4 flex flex-col items-center">
           {/* Simplified Tabs */}
           <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
