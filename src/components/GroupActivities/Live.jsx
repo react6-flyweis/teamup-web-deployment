@@ -32,42 +32,43 @@ const Teamup = () => {
     ];
     return (
         <>
-            <div className="relative md:h-screen w-full overflow-hidden">
+            <div className="relative w-full overflow-hidden h-dvh min-h-dvh bg-[#121212] flex flex-col">
                 <Navbar />
-                <div
-                    style={{ backgroundImage: `url(${team})` }}
-                    className="absolute top-12 left-0 w-full h-full bg-cover bg-center object-cover z-0"
-                ></div>
 
-                <div className="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
+                {/* Hero Body taking up only the remaining space below Navbar */}
+                <div className="relative flex-1 w-full overflow-hidden flex flex-col items-center justify-center">
+                    <div
+                        style={{ backgroundImage: `url(${team})` }}
+                        className="absolute inset-0 w-full h-full bg-cover bg-center object-cover z-0"
+                    ></div>
 
-                {/* Content */}
-                <div className="relative z-20 flex flex-col items-center justify-center md:h-full py-20 text-center px-4 text-white">
-                    <h1 style={{ fontFamily: 'Posterama2001W04' }} className="text-3xl md:text-[64px] font-semibold mb-4">
-                        Live Sport with TEam-Up
-                    </h1>
-                    {/* <div style={{ fontFamily: 'Posterama2001W04' }} className="text-base  p-4 mt-4 md:text-[40px]">
-                        2 for 1 cocktails
-                    </div> */}
-                    <button style={{ fontFamily: 'Posterama2001W04' }} className="text-base bg-[#00AACB] text-white rounded-xl p-4 mt-8 md:text-[26px]">
+                    <div className="absolute inset-0 bg-black bg-opacity-50 z-10 pointer-events-none"></div>
+
+                    {/* Content */}
+                    <div className="relative z-20 flex flex-col items-center justify-center py-6 md:py-0 text-center px-4 text-white">
+                        <h1 style={{ fontFamily: 'Posterama2001W04' }} className="text-3xl md:text-[64px] font-semibold mb-4">
+                            Live Sport with TEam-Up
+                        </h1>
+                        <button style={{ fontFamily: 'Posterama2001W04' }} className="text-base bg-[#00AACB] text-white rounded-xl p-4 mt-8 md:text-[26px]">
                             Book Tables
                         </button>
 
-                    <div className="mt-6 animate-bounce">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="w-8 h-8 md:w-10 md:h-10 text-white"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={3}
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M19 9l-7 7-7-7"
-                            />
-                        </svg>
+                        <div className="mt-6 animate-bounce">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-8 h-8 md:w-10 md:h-10 text-white"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={3}
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M19 9l-7 7-7-7"
+                                />
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
