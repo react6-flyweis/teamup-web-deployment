@@ -153,7 +153,6 @@ const DynamicGame = () => {
   const minAgeText = hasMinAge
     ? String(game.minimumAgeRequirement || game.minAge).trim()
     : '';
-  const idRequirementText = game.idRequired ? 'ID Required' : '';
 
   const hasWheelchair =
     game.wheelchairAccessible === true ||
@@ -186,81 +185,84 @@ const DynamicGame = () => {
 
   return (
     <>
-      <div className="relative md:h-screen w-full overflow-hidden bg-[#121212]">
+      <div className="relative w-full overflow-hidden h-dvh min-h-dvh bg-[#121212] flex flex-col">
         <Navbar />
 
-        {/* Fallback & Background Image:
-            - Shows immediately while video is buffering/loading
-            - Shows as the sole background if no video is provided or if video encounters an error
-        */}
-        {heroImage && (
-          <img
-            src={heroImage}
-            alt={gameName || "Game Background"}
-            loading="eager"
-            fetchPriority="high"
-            className="absolute inset-0 w-full h-full object-cover z-0"
-          />
-        )}
+        {/* Hero Body taking up only the remaining space below Navbar */}
+        <div className="relative flex-1 w-full overflow-hidden flex flex-col items-center justify-center">
+          {/* Fallback & Background Image:
+              - Shows immediately while video is buffering/loading
+              - Shows as the sole background if no video is provided or if video encounters an error
+          */}
+          {heroImage && (
+            <img
+              src={heroImage}
+              alt={gameName || "Game Background"}
+              loading="eager"
+              fetchPriority="high"
+              className="absolute inset-0 w-full h-full object-cover z-0"
+            />
+          )}
 
-        {/* Background Video:
-            - Keeps opacity-0 until onPlaying fires (guaranteeing rendered frames and avoiding gray box)
-            - Smoothly fades in once playback is actively running
-        */}
-        {videoUrl && !videoError && (
-          <video
-            ref={videoRef}
-            key={videoUrl}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            onPlaying={() => setIsVideoPlaying(true)}
-            onError={() => {
-              setVideoError(true);
-              setIsVideoPlaying(false);
-            }}
-            className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-700 bg-transparent ${
-              isVideoPlaying ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
-          >
-            <source src={videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        )}
-
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-50 z-10 pointer-events-none"></div>
-
-        {/* Content */}
-        <div className="relative z-20 flex flex-col items-center justify-center md:h-full py-20 text-center px-4 text-white">
-          <h1 style={{ fontFamily: 'Posterama2001W04' }} className="text-3xl md:text-[64px] font-semibold mb-4 leading-snug">
-            {gameName}
-          </h1>
-          <button
-            onClick={handleBooking}
-            style={{ fontFamily: 'Posterama2001W04' }}
-            className="text-base bg-[#00AACB] hover:bg-[#E1017D] hover:scale-105 transition-all duration-300 text-white rounded-full px-8 py-4 mt-14 md:text-[26px]"
-          >
-            Book Now
-          </button>
-
-          <div className="mt-6 animate-bounce">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-8 h-8 md:w-10 md:h-10 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={3}
+          {/* Background Video:
+              - Keeps opacity-0 until onPlaying fires (guaranteeing rendered frames and avoiding gray box)
+              - Smoothly fades in once playback is actively running
+          */}
+          {videoUrl && !videoError && (
+            <video
+              ref={videoRef}
+              key={videoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onPlaying={() => setIsVideoPlaying(true)}
+              onError={() => {
+                setVideoError(true);
+                setIsVideoPlaying(false);
+              }}
+              className={`absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-700 bg-transparent ${
+                isVideoPlaying ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+              <source src={videoUrl} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          )}
+
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black bg-opacity-50 z-10 pointer-events-none"></div>
+
+          {/* Content */}
+          <div className="relative z-20 flex flex-col items-center justify-center py-6 md:py-0 text-center px-4 text-white">
+            <h1 style={{ fontFamily: 'Posterama2001W04' }} className="text-3xl md:text-[64px] font-semibold mb-4 leading-snug">
+              {gameName}
+            </h1>
+            <button
+              onClick={handleBooking}
+              style={{ fontFamily: 'Posterama2001W04' }}
+              className="text-base bg-[#00AACB] hover:bg-[#E1017D] hover:scale-105 transition-all duration-300 text-white rounded-full px-8 py-4 mt-8 md:mt-14 md:text-[26px]"
+            >
+              Book Now
+            </button>
+
+            <div className="mt-6 animate-bounce">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-8 h-8 md:w-10 md:h-10 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={3}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -294,18 +296,19 @@ const DynamicGame = () => {
                     <div className="flex items-center gap-3">
                       <img
                         src={getAttributeIcon('totalPeoplePerLane', per)}
-                        alt={getAttributeLabel('totalPeoplePerLane', 'Capacity')}
+                        alt={getAttributeLabel('totalPeoplePerLane', 'Total People Per Lane')}
                         onError={(e) => {
                           e.currentTarget.src = per;
                         }}
                         className="w-auto h-[90px] min-[820px]:h-[110px] object-contain"
                       />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                        <div className="text-xs min-[820px]:text-sm uppercase">Capacity</div>
-                        <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">
+                        <div className="text-xs min-[820px]:text-sm uppercase">
+                          {getAttributeLabel('totalPeoplePerLane', 'Total People Per Lane')}
+                        </div>
+                        <div className="text-lg min-[820px]:text-xl font-bold uppercase">
                           {capacityText}
                         </div>
-                        <div className="text-xs min-[820px]:text-sm uppercase">Per Lane</div>
                       </div>
                     </div>
                   )}
@@ -325,11 +328,12 @@ const DynamicGame = () => {
                         className="w-auto h-[90px] min-[820px]:h-[105px] object-contain"
                       />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                        <div className="text-xs min-[820px]:text-sm uppercase">Lanes</div>
+                        <div className="text-xs min-[820px]:text-sm uppercase">
+                          {getAttributeLabel('totalLanes', 'Total Lanes')}
+                        </div>
                         <div className="text-lg min-[820px]:text-xl font-bold uppercase">
                           {lanesText}
                         </div>
-                        <div className="text-xs min-[820px]:text-sm uppercase">Total Lanes</div>
                       </div>
                     </div>
                   )}
@@ -358,9 +362,12 @@ const DynamicGame = () => {
                         className="w-auto h-[90px] min-[820px]:h-[110px] object-contain"
                       />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                        <div className="text-xs min-[820px]:text-sm uppercase">Time</div>
-                        <div className="text-lg min-[820px]:text-xl font-bold mb-2">{durationText}</div>
-                        <div className="text-xs min-[820px]:text-sm uppercase">Duration</div>
+                        <div className="text-xs min-[820px]:text-sm uppercase">
+                          {getAttributeLabel('timeMin', 'Time (Min)')}
+                        </div>
+                        <div className="text-lg min-[820px]:text-xl font-bold uppercase">
+                          {durationText}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -380,9 +387,12 @@ const DynamicGame = () => {
                         className="w-auto h-[90px] min-[820px]:h-[105px] object-contain"
                       />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                        <div className="text-xs min-[820px]:text-sm uppercase">Price</div>
-                        <div className="text-lg min-[820px]:text-xl font-bold mb-2">{priceText}</div>
-                        <div className="text-xs min-[820px]:text-sm uppercase">Per Person</div>
+                        <div className="text-xs min-[820px]:text-sm uppercase">
+                          {getAttributeLabel('pricePerPerson', 'Price (Per Person)')}
+                        </div>
+                        <div className="text-lg min-[820px]:text-xl font-bold uppercase">
+                          {priceText}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -411,13 +421,12 @@ const DynamicGame = () => {
                         className="w-auto h-[90px] min-[820px]:h-[110px] object-contain"
                       />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                        <div className="text-xs min-[820px]:text-sm uppercase">Minimum Age</div>
-                        <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">
+                        <div className="text-xs min-[820px]:text-sm uppercase">
+                          {getAttributeLabel('minAge', 'Min. Age (ID Req)')}
+                        </div>
+                        <div className="text-lg min-[820px]:text-xl font-bold uppercase">
                           {minAgeText}
                         </div>
-                        {idRequirementText && (
-                          <div className="text-xs min-[820px]:text-sm uppercase">{idRequirementText}</div>
-                        )}
                       </div>
                     </div>
                   )}
@@ -437,11 +446,12 @@ const DynamicGame = () => {
                         className="w-auto h-[90px] min-[820px]:h-[105px] object-contain"
                       />
                       <div style={{ fontFamily: 'Posterama2001W04' }} className="leading-[1.4]">
-                        <div className="text-xs min-[820px]:text-sm uppercase">Wheelchair Access</div>
-                        <div className="text-lg min-[820px]:text-xl font-bold mb-2 uppercase">
+                        <div className="text-xs min-[820px]:text-sm uppercase">
+                          {getAttributeLabel('wheelchairAccess', 'Wheelchair Access')}
+                        </div>
+                        <div className="text-lg min-[820px]:text-xl font-bold uppercase">
                           {wheelchairText}
                         </div>
-                        <div className="text-xs min-[820px]:text-sm uppercase">Call the provider</div>
                       </div>
                     </div>
                   )}
