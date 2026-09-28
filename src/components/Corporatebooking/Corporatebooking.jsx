@@ -216,67 +216,71 @@ const Corporatebooking = () => {
 
   return (
     <>
-      <div className="relative h-[60vh] md:h-screen w-full overflow-hidden bg-black">
+      <div className="relative w-full overflow-hidden h-dvh min-h-dvh bg-black flex flex-col">
         <Navbar topBanner={topBanner} />
-        {heroBgImage && (
-          <div
-            style={{ backgroundImage: `url(${heroBgImage})` }}
-            className="absolute inset-0 w-full h-full bg-cover bg-center z-0"
-          ></div>
-        )}
 
-        {/* Gradient Overlay for better text visibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/60 z-10"></div>
+        {/* Hero Body taking up only the remaining space below Navbar */}
+        <div className="relative flex-1 w-full overflow-hidden flex flex-col items-center justify-center">
+          {heroBgImage && (
+            <div
+              style={{ backgroundImage: `url(${heroBgImage})` }}
+              className="absolute inset-0 w-full h-full bg-cover bg-center z-0"
+            ></div>
+          )}
 
-        {/* Content */}
-        <div className="relative z-20 flex flex-col items-center justify-center text-center px-4 h-full text-white">
-          <motion.div 
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            className="relative z-20 flex flex-col items-center"
-          >
-            <h1 className="text-white text-4xl sm:text-[80px] font-bold mb-6 uppercase tracking-tighter leading-none drop-shadow-2xl">
-              {heroHeading.includes(' ') && !heroHeading.includes('<br') ? (
-                <>
-                  {heroHeading.split(' ')[0]} <br className="md:hidden" /> {heroHeading.split(' ').slice(1).join(' ')}
-                </>
-              ) : (
-                heroHeading
-              )}
-            </h1>
+          {/* Gradient Overlay for better text visibility */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/60 z-10 pointer-events-none"></div>
 
-            {heroSubtitle && (
-              <p className="text-lg md:text-2xl font-semibold mb-8 max-w-2xl drop-shadow-lg">
-                {heroSubtitle}
-              </p>
-            )}
-
-            <button 
-              onClick={handleHeroBooking}
-              className="text-lg bg-[#00AACB] hover:bg-[#E1017D] hover:scale-110 transition-all duration-300 text-white rounded-full px-12 py-5 md:text-[28px] font-extrabold uppercase shadow-[0_0_20px_rgba(0,170,203,0.5)] cursor-pointer"
+          {/* Content */}
+          <div className="relative z-20 flex flex-col items-center justify-center text-center px-4 py-6 md:py-0 text-white">
+            <motion.div 
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="relative z-20 flex flex-col items-center"
             >
-              Book Now
-            </button>
+              <h1 className="text-white text-4xl sm:text-[80px] font-bold mb-6 uppercase tracking-tighter leading-none drop-shadow-2xl">
+                {heroHeading.includes(' ') && !heroHeading.includes('<br') ? (
+                  <>
+                    {heroHeading.split(' ')[0]} <br className="md:hidden" /> {heroHeading.split(' ').slice(1).join(' ')}
+                  </>
+                ) : (
+                  heroHeading
+                )}
+              </h1>
 
-            {/* Bouncing SVG Arrow */}
-            <div className="mt-16 animate-bounce">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-12 h-12 text-white opacity-80"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
+              {heroSubtitle && (
+                <p className="text-lg md:text-2xl font-semibold mb-8 max-w-2xl drop-shadow-lg">
+                  {heroSubtitle}
+                </p>
+              )}
+
+              <button 
+                onClick={handleHeroBooking}
+                className="text-lg bg-[#00AACB] hover:bg-[#E1017D] hover:scale-110 transition-all duration-300 text-white rounded-full px-12 py-5 md:text-[28px] font-extrabold uppercase shadow-[0_0_20px_rgba(0,170,203,0.5)] cursor-pointer"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </motion.div>
+                Book Now
+              </button>
+
+              {/* Bouncing SVG Arrow */}
+              <div className="mt-8 md:mt-16 animate-bounce">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-12 h-12 text-white opacity-80"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
 
