@@ -46,53 +46,56 @@ const TeamUpParties = () => {
 
   return (
     <div className="min-h-screen font-noir-pro text-white bg-black">
-      <Navbar />
+      {/* Hero Section with Navbar taking rest of screen */}
+      <div className="relative w-full overflow-hidden h-dvh min-h-dvh flex flex-col">
+        <Navbar />
 
-      {/* Hero Section */}
-      <div className="relative md:h-screen w-full overflow-hidden">
-        <div
-          style={{ backgroundImage: `url(${pageHeroImage})` }}
-          className="absolute top-0 left-0 w-full h-full bg-cover bg-center object-cover z-0"
-        ></div>
+        {/* Hero Body taking up only the remaining space below Navbar */}
+        <div className="relative flex-1 w-full overflow-hidden flex flex-col items-center justify-center">
+          <div
+            style={{ backgroundImage: `url(${pageHeroImage})` }}
+            className="absolute inset-0 w-full h-full bg-cover bg-center object-cover z-0"
+          ></div>
 
-        <div className="absolute inset-0 bg-black/60 z-10"></div>
+          <div className="absolute inset-0 bg-black/60 z-10 pointer-events-none"></div>
 
-        {/* Hero Content */}
-        <div className="relative z-20 flex flex-col items-center justify-center md:h-full py-24 text-center px-4 text-white">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            style={{ fontFamily: 'Posterama2001W04' }}
-            className="text-4xl sm:text-6xl md:text-[84px] font-semibold mb-8 uppercase tracking-tighter drop-shadow-2xl"
-          >
-            {pageHeadline}
-          </motion.h1>
-
-          <div className="mb-8">
-            <button 
-              onClick={handleBooking}
-              className="bg-[#00AACB] hover:bg-cyan-600 text-white font-bold py-3 px-8 text-lg rounded-full uppercase tracking-tighter w-56 transition-all shadow-[0_0_20px_rgba(0,170,203,0.5)]"
+          {/* Hero Content */}
+          <div className="relative z-20 flex flex-col items-center justify-center py-6 md:py-0 text-center px-4 text-white">
+            <motion.h1 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              style={{ fontFamily: 'Posterama2001W04' }}
+              className="text-4xl sm:text-6xl md:text-[84px] font-semibold mb-6 uppercase tracking-tighter drop-shadow-2xl"
             >
-              BOOK NOW
-            </button>
-          </div>
+              {pageHeadline}
+            </motion.h1>
 
-          <div className="mt-6 animate-bounce">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-8 h-8 md:w-10 md:h-10 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={3}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+            <div className="mb-6">
+              <button 
+                onClick={handleBooking}
+                className="bg-[#00AACB] hover:bg-cyan-600 text-white font-bold py-3 px-8 text-lg rounded-full uppercase tracking-tighter w-56 transition-all shadow-[0_0_20px_rgba(0,170,203,0.5)]"
+              >
+                BOOK NOW
+              </button>
+            </div>
+
+            <div className="mt-4 animate-bounce">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-8 h-8 md:w-10 md:h-10 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={3}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>

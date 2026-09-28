@@ -52,34 +52,37 @@ const DynamicActivity = () => {
 
   return (
     <div className="min-h-screen font-noir-pro text-white bg-black">
-      <Navbar />
+      {/* Hero Section with Navbar taking rest of screen */}
+      <div className="relative w-full overflow-hidden h-dvh min-h-dvh flex flex-col">
+        <Navbar />
 
-      {/* Hero Section */}
-      <section
-        className="relative min-h-[80vh] bg-cover bg-center flex items-center justify-center text-center"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
-        <div className="absolute inset-0 bg-black/40 z-0"></div>
-        <div className="relative z-10 px-4 mt-20 max-w-5xl mx-auto">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="font-posterama text-7xl md:text-[120px] font-black text-white mb-2 tracking-tight drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] uppercase"
-          >
-            {pageHeadline}
-          </motion.h1>
-          
-          <div className="flex justify-center items-center mt-8">
-            <button
-              onClick={handleBooking}
-              className="bg-[#00AACB] hover:bg-cyan-600 text-white font-bold py-3 px-8 text-lg rounded-full uppercase tracking-tighter w-56 transition-all"
+        {/* Hero Section */}
+        <section
+          className="relative flex-1 w-full overflow-hidden bg-cover bg-center flex items-center justify-center text-center"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        >
+          <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none"></div>
+          <div className="relative z-10 px-4 py-6 md:py-0 max-w-5xl mx-auto">
+            <motion.h1 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="font-posterama text-5xl sm:text-7xl md:text-[120px] font-black text-white mb-2 tracking-tight drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] uppercase"
             >
-              BOOK NOW
-            </button>
+              {pageHeadline}
+            </motion.h1>
+            
+            <div className="flex justify-center items-center mt-6 md:mt-8">
+              <button
+                onClick={handleBooking}
+                className="bg-[#00AACB] hover:bg-cyan-600 text-white font-bold py-3 px-8 text-lg rounded-full uppercase tracking-tighter w-56 transition-all"
+              >
+                BOOK NOW
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* Details Section with Metallic Texture */}
       <div

@@ -581,28 +581,44 @@ const Navbar = ({ topBanner }) => {
               >
                 <div className="max-w-screen-xl mx-auto">
                   {menuItems[hoveredMenu]?.subItems?.length > 0 && (
-                    <div className="grid grid-cols-3 sm:grid-cols-7 gap-6">
+                    <div className="grid grid-cols-3 sm:grid-cols-7 gap-6 items-stretch">
                       {menuItems[hoveredMenu].subItems.map((item, index) => {
                         const content = (
-                          <div className="flex flex-col items-center gap-2 text-white hover:bg-gray-700/50 rounded-lg ps-4 pe-4">
-                            {item.icon ? (
-                              <img src={item.icon} alt={item.name} className="w-full h-[78px] object-contain" />
-                            ) : (
-                              <div className="w-full h-[78px] bg-gray-700/30 rounded flex items-center justify-center text-xs text-gray-400">
-                                No Icon
-                              </div>
-                            )}
-                            <span style={{ fontFamily: 'Noir' }} className="text-[18px] text-center">
+                          <div className="flex flex-col items-center justify-start h-full w-full p-3 text-white hover:bg-gray-700/50 rounded-lg transition-colors">
+                            <div className="w-[78px] h-[78px] flex items-center justify-center flex-shrink-0">
+                              {item.icon ? (
+                                <img
+                                  src={item.icon}
+                                  alt={item.name}
+                                  className="max-w-full max-h-full w-auto h-auto object-contain"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-700/30 rounded flex items-center justify-center text-xs text-gray-400">
+                                  No Icon
+                                </div>
+                              )}
+                            </div>
+                            <span
+                              style={{ fontFamily: 'Noir' }}
+                              className="text-[18px] text-center leading-snug mt-2 w-full flex-1 flex items-start justify-center pt-1"
+                            >
                               {item.name}
                             </span>
                           </div>
                         );
                         return item.link ? (
-                          <Link to={item.link} key={index} onClick={handleSubItemClick}>
+                          <Link
+                            to={item.link}
+                            key={index}
+                            onClick={handleSubItemClick}
+                            className="h-full flex flex-col"
+                          >
                             {content}
                           </Link>
                         ) : (
-                          <div key={index}>{content}</div>
+                          <div key={index} className="h-full flex flex-col">
+                            {content}
+                          </div>
                         );
                       })}
                     </div>
@@ -655,7 +671,7 @@ const Navbar = ({ topBanner }) => {
                                     className="flex items-center gap-2 text-white hover:text-[#E1017D]"
                                     onClick={handleSubItemClick}
                                   >
-                                    {item.icon && <img src={item.icon} alt={item.name} className="w-6 h-6 object-contain" />}
+                                    {item.icon && <img src={item.icon} alt={item.name} className="w-6 h-6 object-contain shrink-0" />}
                                     <span className="text-sm">{item.name}</span>
                                   </Link>
                                 ) : (
@@ -663,7 +679,7 @@ const Navbar = ({ topBanner }) => {
                                     key={index}
                                     className="flex items-center gap-2 text-white hover:text-[#E1017D]"
                                   >
-                                    {item.icon && <img src={item.icon} alt={item.name} className="w-6 h-6 object-contain" />}
+                                    {item.icon && <img src={item.icon} alt={item.name} className="w-6 h-6 object-contain shrink-0" />}
                                     <span className="text-sm">{item.name}</span>
                                   </div>
                                 )

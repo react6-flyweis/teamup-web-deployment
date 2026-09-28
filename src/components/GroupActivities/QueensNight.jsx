@@ -74,7 +74,7 @@ const QueensNight = () => {
   return (
     <>
       {/* Hero Section - fills remaining viewport height */}
-      <div className="relative min-h-screen flex flex-col overflow-hidden">
+      <div className="relative w-full h-dvh min-h-dvh flex flex-col overflow-hidden">
         <div
           style={{ backgroundImage: `url(${pageHeroImage})` }}
           className="absolute inset-0 w-full h-full bg-cover bg-center z-0"
@@ -83,7 +83,7 @@ const QueensNight = () => {
         <Navbar />
 
         {/* Hero Content grows to fill remaining space */}
-        <div className="relative z-20 flex-1 flex flex-col items-center justify-center text-center px-4 py-12 text-white">
+        <div className="relative z-20 flex-1 flex flex-col items-center justify-center text-center px-4 py-6 md:py-0 text-white">
           <div className="relative z-20 flex flex-col items-center justify-center">
             <h1 className="text-white text-3xl sm:text-[64px] font-bold mb-4 uppercase tracking-tighter">
               {pageHeadline}
