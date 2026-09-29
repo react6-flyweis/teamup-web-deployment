@@ -6,7 +6,7 @@ const LocationContext = createContext();
 
 export const LocationProvider = ({ children }) => {
   const queryClient = useQueryClient();
-  const { data, isLoading } = useLocations();
+  const { data, isLoading, isError } = useLocations();
   const apiLocations = data?.locations || [];
 
   const [selectedLocation, setSelectedLocationState] = useState(() => {
@@ -41,21 +41,25 @@ export const LocationProvider = ({ children }) => {
   useEffect(() => {
     if (apiLocations.length > 0) {
       const saved = localStorage.getItem('selectedLocation');
+      let locationToSet = null;
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
           const found = apiLocations.find(
-            (loc) => loc.city === parsed.city && loc.state === parsed.state
+            (loc) => (loc.slug && loc.slug === parsed.slug) || (loc.city === parsed.city && loc.state === parsed.state)
           );
           if (found) {
-            setSelectedLocationState(found);
-            return;
+            locationToSet = found;
           }
         } catch (e) {
           // ignore
         }
       }
-      setSelectedLocationState(apiLocations[0]);
+      if (!locationToSet) {
+        locationToSet = apiLocations[0];
+      }
+      setSelectedLocationState(locationToSet);
+      localStorage.setItem('selectedLocation', JSON.stringify(locationToSet));
     }
   }, [apiLocations]);
 
@@ -64,6 +68,19 @@ export const LocationProvider = ({ children }) => {
       localStorage.setItem('selectedLocation', JSON.stringify(selectedLocation));
     }
   }, [selectedLocation]);
+
+  // On first visit without cached location, wait until locations are loaded and default is set
+  if (!selectedLocation && !isError && (isLoading || apiLocations.length > 0)) {
+    if (apiLocations.length > 0) {
+      const defaultLoc = apiLocations[0];
+      localStorage.setItem('selectedLocation', JSON.stringify(defaultLoc));
+    }
+    return (
+      <div className="flex items-center justify-center h-screen bg-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-600"></div>
+      </div>
+    );
+  }
 
   return (
     <LocationContext.Provider
