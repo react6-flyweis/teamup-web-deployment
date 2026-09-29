@@ -2,7 +2,7 @@ import { FaFacebookF, FaInstagram, FaTiktok } from 'react-icons/fa';
 import bgImage from '../assets/bg.svg';
 import symbol2 from '../assets/Symbol2.svg';
 import { Link } from 'react-router-dom';
-import { useSiteContent } from '../hooks/useSiteContent';
+import { useSiteContent, resolveImageUrl } from '../hooks/useSiteContent';
 
 const logo = '/assets/logo.svg';
 
@@ -12,6 +12,8 @@ const Footer = () => {
     const footerData = footerSiteContent?.content?.data || footerSiteContent?.data;
     const companyInfo = footerData?.companyInfo;
     const socialMediaLinks = footerData?.socialMediaLinks;
+
+    const bgWallpaperUrl = resolveImageUrl(footerData?.bgWallpaperImageUrl || footerData?.bgWallpaperImage) || bgImage;
 
     const officeAddress = companyInfo?.officeAddress || '';
     const addressLabel = companyInfo?.addressLabel || footerData?.addressLabel || 'Address';
@@ -25,7 +27,7 @@ const Footer = () => {
     return (
         <footer
             className="bg-cover bg-center text-white relative overflow-hidden"
-            style={{ backgroundImage: `url(${bgImage})` }}
+            style={{ backgroundImage: `url(${bgWallpaperUrl})` }}
         >
             {/* Top Links */}
             <div
