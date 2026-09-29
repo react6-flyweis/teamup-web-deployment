@@ -5,7 +5,7 @@ import { useSiteContent, resolveImageUrl } from '../../hooks/useSiteContent';
 import { useLocationContext } from '../../context/LocationContext';
 
 const FoodMenu = () => {
-  const [activeTab, setActiveTab] = useState('flatbreads');
+  const [activeTab, setActiveTab] = useState('appetizers');
   const { selectedLocation } = useLocationContext();
 
   const { data: siteContentData, isLoading } = useSiteContent('food-drinks', {
@@ -26,10 +26,13 @@ const FoodMenu = () => {
   const bgWallpaperUrl = resolveImageUrl(contentData?.bgWallpaperImageUrl || contentData?.bgWallpaperImage);
 
   const menuImages = contentData?.menuImages || {};
-  const flatbreadsImg = resolveImageUrl(menuImages.flatbreads || menuImages.flatbread);
+  const flatbreadsImg = resolveImageUrl(
+    menuImages.flatbreads || menuImages.flatbread || menuImages.mainCourse || menuImages.maincourse
+  );
   const appetizersImg = resolveImageUrl(menuImages.appetizers || menuImages.appetizer);
 
   const currentImage = activeTab === 'flatbreads' ? flatbreadsImg : appetizersImg;
+  const currentTabLabel = activeTab === 'flatbreads' ? 'main course' : 'appetizers';
 
   return (
     <div className="min-h-screen bg-black">
@@ -45,17 +48,6 @@ const FoodMenu = () => {
           <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
             <button
               type="button"
-              onClick={() => setActiveTab('flatbreads')}
-              className={`px-8 py-3 rounded-full font-bold text-base sm:text-lg uppercase transition-all shadow-lg ${
-                activeTab === 'flatbreads'
-                  ? 'bg-[#E1017D] text-white scale-105'
-                  : 'bg-black/60 text-white/80 hover:text-white hover:bg-black/80'
-              }`}
-            >
-              Flatbreads
-            </button>
-            <button
-              type="button"
               onClick={() => setActiveTab('appetizers')}
               className={`px-8 py-3 rounded-full font-bold text-base sm:text-lg uppercase transition-all shadow-lg ${
                 activeTab === 'appetizers'
@@ -65,6 +57,17 @@ const FoodMenu = () => {
             >
               Appetizers
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('flatbreads')}
+              className={`px-8 py-3 rounded-full font-bold text-base sm:text-lg uppercase transition-all shadow-lg ${
+                activeTab === 'flatbreads'
+                  ? 'bg-[#E1017D] text-white scale-105'
+                  : 'bg-black/60 text-white/80 hover:text-white hover:bg-black/80'
+              }`}
+            >
+              Main Course
+            </button>
           </div>
 
           {/* Menu Image: Sized to full card width */}
@@ -72,12 +75,12 @@ const FoodMenu = () => {
             {currentImage ? (
               <img
                 src={currentImage}
-                alt={`${activeTab} menu`}
+                alt={`${currentTabLabel} menu`}
                 className="w-full h-auto rounded-[2rem] shadow-2xl object-contain"
               />
             ) : (
               <div className="w-full py-16 text-center text-white/80 bg-black/60 backdrop-blur-md rounded-[2rem] font-semibold text-lg">
-                No menu image available for {activeTab}.
+                No menu image available for {currentTabLabel}.
               </div>
             )}
           </div>
