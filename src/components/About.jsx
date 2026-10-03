@@ -8,6 +8,8 @@ import Footer from './Footer';
 import { motion } from "framer-motion";
 import { useContentPage } from '../hooks/useContentPage';
 import { parseHtmlToReact } from '../utils/htmlParser';
+import { useSiteContent, resolveImageUrl } from '../hooks/useSiteContent';
+import bg from '../assets/stepdown2.jpg';
 
 const duck = '/assets/about.svg'
 const texture = '/assets/texture.svg'
@@ -16,6 +18,11 @@ const map = '/assets/map.svg'
 const about2 = '/assets/about3.svg'
 
 const Duckpin = () => {
+  const { data: homeContentData } = useSiteContent('home');
+  const homeData = homeContentData?.content?.data || homeContentData?.data;
+  const homeMainBg = homeData?.mainBg || homeData?.hero?.mainBg;
+  const mainBg = homeMainBg ? resolveImageUrl(homeMainBg) : bg;
+
   const { data, isLoading, isError } = useContentPage('about-us');
   const content = data?.page?.content;
 
@@ -23,7 +30,7 @@ const Duckpin = () => {
     <>
 {/* ... */}
       <div className="relative w-full overflow-hidden h-dvh min-h-dvh bg-[#121212] flex flex-col">
-        <Navbar />
+        <Navbar topBanner={homeData?.topBanner} />
 
         {/* Hero Body taking up only the remaining space below Navbar */}
         <div className="relative flex-1 w-full overflow-hidden flex flex-col items-center justify-center">
@@ -62,7 +69,7 @@ const Duckpin = () => {
 
 
       <div className="w-full bg-fixed bg-cover bg-center"
-        style={{ backgroundImage: `url(${texture})` }}>
+        style={{ backgroundImage: `url(${mainBg})` }}>
 
         <section className="text-center pt-12 px-4">
           <h2 style={{ fontFamily: 'Posterama2001W04' }} className="text-xl md:text-[44px] font-bold text-[#292524] mb-4 uppercase leading-tight tracking-wide">

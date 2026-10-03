@@ -50,6 +50,7 @@ const Shufflecart = lazy(() => import('./components/Cart/Shufflecart'));
 const Waiver = lazy(() => import('./components/Waiver'));
 const DynamicGame = lazy(() => import('./components/Choosegame/DynamicGame'));
 const DynamicActivity = lazy(() => import('./components/GroupActivities/DynamicActivity'));
+const DynamicContentPage = lazy(() => import('./components/DynamicContentPage'));
 const ComingSoon = lazy(() => import('./components/ComingSoon'));
 const NotFound = lazy(() => import('./components/NotFound'));
 const SocialEvents = lazy(() => import('./components/Events/SocialEvents'));
@@ -125,6 +126,8 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/games/:slug" element={<DynamicGame />} />
         <Route path="/activities/:slug" element={<DynamicActivity />} />
+        {/* Catch-all for admin-created footer pages (e.g. /page/waiver, /page/accessibility) */}
+        <Route path="/page/:slug" element={<DynamicContentPage />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
