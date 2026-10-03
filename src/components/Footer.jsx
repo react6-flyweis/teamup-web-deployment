@@ -3,11 +3,13 @@ import bgImage from '../assets/bg.svg';
 import symbol2 from '../assets/Symbol2.svg';
 import { Link } from 'react-router-dom';
 import { useSiteContent, resolveImageUrl } from '../hooks/useSiteContent';
+import { useContentPages } from '../hooks/useContentPage';
 
 const logo = '/assets/logo.svg';
 
 const Footer = () => {
     const { data: footerSiteContent } = useSiteContent('footer');
+    const { data: pagesData } = useContentPages();
 
     const footerData = footerSiteContent?.content?.data || footerSiteContent?.data;
     const companyInfo = footerData?.companyInfo;
@@ -33,22 +35,21 @@ const Footer = () => {
             <div
                 className="font-noir-pro font-bold flex flex-wrap justify-center sm:justify-start gap-x-8 gap-y-4 border-b border-[#FFE6D8]/30 border-t py-8 px-6 md:px-12"
             >
-                {[
-                    { label: 'About Us', to: '/about' },
-                    { label: 'Privacy Policy', to: '/privacy' },
-                    { label: 'Terms and Conditions', to: '/terms' },
-                    // { label: 'Family Source', to: '/family' },
-                    { label: 'Waiver', to: '/waiver' },
-                    { label: 'Contact Us', to: '/contact' }
-                ].map((item, index) => (
+                {(pagesData?.pages ?? []).map((page) => (
                     <Link
-                        key={index}
-                        to={item.to}
+                        key={page._id}
+                        to={`/page/${page.slug}`}
                         className="hover:underline text-sm md:text-base uppercase tracking-wider transition-all"
                     >
-                        {item.label}
+                        {page.title}
                     </Link>
                 ))}
+                <Link
+                    to="/contact"
+                    className="hover:underline text-sm md:text-base uppercase tracking-wider transition-all"
+                >
+                    Contact Us
+                </Link>
             </div>
 
 

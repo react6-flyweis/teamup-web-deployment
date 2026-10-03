@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { parseHtmlToReact } from '../utils/htmlParser';
-import { resolveImageUrl } from '../hooks/useSiteContent';
+import { resolveImageUrl, useSiteContent } from '../hooks/useSiteContent';
+import bg from '../assets/stepdown2.jpg';
 
 const texture = '/assets/texture.svg';
 
@@ -15,6 +16,11 @@ export const ContentPageTemplate = ({
   isLoading = false,
   isError = false,
 }) => {
+  const { data: homeSiteContent } = useSiteContent('home');
+  const homeData = homeSiteContent?.content?.data || homeSiteContent?.data;
+  const homeMainBg = homeData?.mainBg || homeData?.hero?.mainBg;
+  const mainBgImage = (page?.mainBg ? resolveImageUrl(page.mainBg) : null) || (homeMainBg ? resolveImageUrl(homeMainBg) : null) || bg;
+
   // Resolve media and text fields strictly from API data with backward-compatible aliases
   const rawBg = page?.heroBgImage || page?.heroImage || page?.bgMediaUrl;
   const bgImage = rawBg ? resolveImageUrl(rawBg) : '';
@@ -48,7 +54,7 @@ export const ContentPageTemplate = ({
     <>
       {/* ─── 1. HERO SECTION (grows to remaining screen as main hero) ─── */}
       <div className="relative w-full overflow-hidden h-dvh min-h-dvh bg-[#121212] flex flex-col">
-        <Navbar />
+        <Navbar topBanner={homeData?.topBanner} />
 
         {/* Hero Body taking up only the remaining space below Navbar */}
         <div className="relative flex-1 w-full overflow-hidden flex flex-col items-center justify-center">
@@ -123,7 +129,7 @@ export const ContentPageTemplate = ({
       {/* ─── 2. TIP TAP RICH CONTENT ARTICLE ─── */}
       <div
         className="w-full bg-fixed bg-cover bg-center min-h-[50vh]"
-        style={{ backgroundImage: `url(${texture})` }}
+        style={{ backgroundImage: `url(${mainBgImage})` }}
       >
         <main className="max-w-5xl mx-auto px-4 md:px-12 py-10 md:py-16">
           {isLoading ? (
